@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>hamnt</RootNamespace>
+    <AssemblyName>hamnt</AssemblyName>
+    <VersionPrefix>0.0.1</VersionPrefix>
+    <VersionSuffix>alphs</VersionSuffix>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <SelfContained>true</SelfContained>
+   
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+  </ItemGroup>
+</Project>
