@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+[JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(Dictionary<string, string>))]
 public partial class JsonContext : JsonSerializerContext { }
 
@@ -13,20 +14,15 @@ public static class GlobalStatic
 {
     public static string? CONFIG_FILE_PATH = null;
     public static string? NOTE_FILE_PATH = null;
-
-    public static Dictionary<string, string> NOTE_FILES = new Dictionary<string, string>();
-
-    public static string bldVersion = null;
-    
-    public static Dictionary<string, string> PARAMETERS = new Dictionary<string, string>();
-
-
+    public static string? bldVersion = null;
+    public static Dictionary<string, string> NOTE_FILES = new();
+    public static Dictionary<string, string> PARAMETERS = new();
     public static bool interactiveMode = true;
 
     // define a constructor
     static GlobalStatic()
     {
-        
+
         // determine the user's home directory
         string homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         // the CONFIG_FILE is user's home directory
@@ -37,7 +33,7 @@ public static class GlobalStatic
         if (!File.Exists(NOTE_FILE_PATH))
         {
             // create the directory if it doesn't exist
-            Directory.CreateDirectory(Path.GetDirectoryName(NOTE_FILE_PATH));
+            Directory.CreateDirectory(Path.GetDirectoryName(NOTE_FILE_PATH!)!);
             DBg.d(LogLevel.Trace, "Creating config file directory: " + NOTE_FILE_PATH);
             // create the file
             File.Create(NOTE_FILE_PATH).Close();
@@ -48,7 +44,7 @@ public static class GlobalStatic
         if (!File.Exists(CONFIG_FILE_PATH))
         {
             // create the directory if it doesn't exist
-            Directory.CreateDirectory(Path.GetDirectoryName(CONFIG_FILE_PATH));
+            Directory.CreateDirectory(Path.GetDirectoryName(CONFIG_FILE_PATH!)!);
             DBg.d(LogLevel.Trace, "Creating config file directory: " + CONFIG_FILE_PATH);
             // create the file
             File.Create(CONFIG_FILE_PATH).Close();
@@ -72,7 +68,7 @@ public static class GlobalStatic
             PARAMETERS["LOG_LEVEL"] = LogLevel.Trace.ToString();
         }
 
-        
+
 
     }
 
@@ -90,14 +86,13 @@ public static class GlobalStatic
 
     public static void ReadNoteFiles()
     {
-        // read the note files from the config file
         if (File.Exists(NOTE_FILE_PATH))
         {
             string json = File.ReadAllText(NOTE_FILE_PATH);
             try
             {
-                var options = new JsonSerializerOptions { TypeInfoResolver = JsonContext.Default };
-                NOTE_FILES = JsonSerializer.Deserialize<Dictionary<string, string>>(json, options);
+                NOTE_FILES = JsonSerializer.Deserialize(json, JsonContext.Default.DictionaryStringString) 
+                    ?? new Dictionary<string, string>();
             }
             catch (System.Text.Json.JsonException ex)
             {
@@ -105,31 +100,20 @@ public static class GlobalStatic
                 NOTE_FILES = new Dictionary<string, string>();
             }
         }
-        else
-        {
-            DBg.d(LogLevel.Trace, "Note Files file not found: " + NOTE_FILE_PATH);
-        }
     }
     public static void WriteNoteFiles()
     {
-        // write the note files to the config file
         if (NOTE_FILES.Count > 0)
         {
-            var options = new JsonSerializerOptions 
-            { 
-                TypeInfoResolver = JsonContext.Default,
-                WriteIndented = true
-            };
-            string json = JsonSerializer.Serialize(NOTE_FILES, options);
+            string json = JsonSerializer.Serialize(NOTE_FILES, JsonContext.Default.DictionaryStringString);
             DBg.d(LogLevel.Trace, "JSON:" + json);
-            File.WriteAllText(NOTE_FILE_PATH, json);
+            File.WriteAllText(NOTE_FILE_PATH!, json);
             DBg.d(LogLevel.Trace, "Writing note files to: " + NOTE_FILE_PATH);
         }
         else
         {
             DBg.d(LogLevel.Trace, "No note files to write to: " + NOTE_FILE_PATH);
-            // write an empty file
-            File.WriteAllText(NOTE_FILE_PATH, "{}");
+            File.WriteAllText(NOTE_FILE_PATH!, "{}");
         }
     }
     public static void ReadConfigFile()
@@ -139,20 +123,10 @@ public static class GlobalStatic
             try
             {
                 string json = File.ReadAllText(CONFIG_FILE_PATH);
-                var options = new JsonSerializerOptions { TypeInfoResolver = JsonContext.Default };
-                var config = JsonSerializer.Deserialize<Dictionary<string, string>>(json, options);
-                
+                var config = JsonSerializer.Deserialize(json, JsonContext.Default.DictionaryStringString);
                 if (config != null)
                 {
-                    // Only update PARAMETERS if the key exists in config
-                    if (config.ContainsKey("NOTES_LOCATION"))
-                    {
-                        PARAMETERS["NOTES_LOCATION"] = config["NOTES_LOCATION"];
-                    }
-                    if (config.ContainsKey("LOG_LEVEL"))
-                    {
-                        PARAMETERS["LOG_LEVEL"] = config["LOG_LEVEL"];
-                    }
+                    PARAMETERS = config;
                 }
             }
             catch (JsonException ex)
@@ -160,20 +134,12 @@ public static class GlobalStatic
                 DBg.d(LogLevel.Error, "BAD CONFIG FILE: " + ex.Message);
             }
         }
-        else
-        {
-            DBg.d(LogLevel.Trace, "Config file not found: " + CONFIG_FILE_PATH);
-        }
     }
     public static void WriteConfigFile()
     {
-        // write the config file
-        
-            string json = System.Text.Json.JsonSerializer.Serialize(PARAMETERS);
-            DBg.d(LogLevel.Trace, "JSON:" + json);
-            File.WriteAllText(CONFIG_FILE_PATH, json);
-            DBg.d(LogLevel.Trace, "Writing config file: " + CONFIG_FILE_PATH);
-        
-        
+        string json = JsonSerializer.Serialize(PARAMETERS, JsonContext.Default.DictionaryStringString);
+        DBg.d(LogLevel.Trace, "JSON:" + json);
+        File.WriteAllText(CONFIG_FILE_PATH!, json);
+        DBg.d(LogLevel.Trace, "Writing config file: " + CONFIG_FILE_PATH);
     }
 }

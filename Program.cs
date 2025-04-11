@@ -1,9 +1,6 @@
 using System;
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Linq;
-using System.IO;
-using System.Collections.Generic;
 using hamnt; // Ensure this is included for file operations
 
 
@@ -16,8 +13,7 @@ class Program
         AppDomain.CurrentDomain.ProcessExit += new EventHandler(HandleProcessExit);
 
         // Application logic and command-line argument processing goes here
-        Console.WriteLine($"HAMNT - Hyper Aggressively Minimal Note Taking app // VERSION: {GlobalStatic.bldVersion}");
-
+        
         if (args.Length > 0)
         {
             DBg.d(LogLevel.Trace, "Command-line arguments:");
@@ -36,6 +32,10 @@ class Program
             // execute in CLI mode
             GlobalStatic.interactiveMode = false;
         }
+        else {
+            Console.WriteLine($"HAMNT - Hyper Aggressively Minimal Note Taking app // VERSION: {GlobalStatic.bldVersion}");
+
+        }
         // we can re-use the while { switch } loop for CLI mode by  
         // setting command <-- q if we're not in interactive mode
         var command = string.Empty;
@@ -48,7 +48,9 @@ class Program
         //      
         while (command != "q")
         {
-            Console.WriteLine("(a/r/l/q) >>");
+            if(GlobalStatic.interactiveMode) {
+                Console.WriteLine("(a/r/l/q) >>");
+            }
             var inline = string.Empty;
             if (GlobalStatic.interactiveMode)
             {
@@ -72,7 +74,7 @@ class Program
                 case "a":
                 case "-a":
                     {
-                        engine.AddNoteFile(inline);
+                        engine.AddNoteFile(inline!);
                         if (!GlobalStatic.interactiveMode) { command = "q"; }
                         ;
                         break;
@@ -82,7 +84,7 @@ class Program
                 case "-r":
                 case "r":
                     {
-                        engine.RemoveNoteFile(inline);
+                        engine.RemoveNoteFile(inline!);
                         if (!GlobalStatic.interactiveMode) { command = "q"; }
                         ;
                         break;
@@ -92,7 +94,7 @@ class Program
                 case "-l":
                 case "l":
                     {
-                        engine.ListNoteFiles(inline);
+                        engine.ListNoteFiles(inline!);
                         if (!GlobalStatic.interactiveMode) { command = "q"; }
                         ;
                         break;
@@ -102,7 +104,7 @@ class Program
                 case "-s":
                 case "s":
                     {
-                        engine.SetParameter(inline);
+                        engine.SetParameter(inline!);
                         if (!GlobalStatic.interactiveMode) { command = "q"; }
                         ;
                         break;
@@ -141,10 +143,13 @@ class Program
                         Console.WriteLine("In interactive mode, you can use the single letter commands without the leading - or --\n");
                         Console.WriteLine("If the first argument doesn't match any of the commands, but IS a Note File alias,\n the rest of the commandline is added to that note file (which is created if applicable).\n");
                         Console.WriteLine("If the first argument doesn't match any of the command OR a Note File alias, \nall note files are grepped for the remainder of the command line.\n");
+                         if (!GlobalStatic.interactiveMode) { command = "q"; }
+                        ;
                         break;
                     }
                 default: {
-                    engine.Search(inline, command);
+                    DBg.d(LogLevel.Trace, "--> search " + command);
+                    engine.Search(inline!, command);
                     if (!GlobalStatic.interactiveMode) { command = "q"; }
                     break;
                 }
@@ -158,8 +163,10 @@ class Program
         // write the note files back to the note files config file
         GlobalStatic.WriteNoteFiles();
         cleanupPerformed = true;
-        Console.WriteLine("Exiting program.");
-
+        if(GlobalStatic.interactiveMode)
+        {
+            Console.WriteLine("Exiting program.");
+        }        
 
 
     }
