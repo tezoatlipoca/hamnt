@@ -1,0 +1,15 @@
+{
+  "Package": {
+    "Name": "hamnt",
+    "Version": "0.1.0",
+    "Architecture": "amd64",
+    "Maintainer": "tezoatlipoca <tezoatlipoca@gmail.com>",
+    "Description": "Hyper Aggressively Minimal Note Taking CLI / Interactive shell app.",
+    "Homepage": "https://github.com/tezoatlipoca/hamnt",
+    "PostInstallScript": "#!/bin/sh\nchmod +x /usr/local/bin/hamnt"
+  },
+  "Install": {
+    "Source": "bin/Release/net8.0/linux-x64/publish/hamnt",
+    "Target": "/usr/local/bin/hamnt"
+  }
+}
