@@ -31,7 +31,8 @@ Options:
 Launching hamnt with no arguments will enter interactive mode.
 
 In interactive mode, you can use the single letter commands without the leading - or --
-and uer input continues until `q`uit. 
+and uer input continues until `q`uit; in interactive mode, you don't have to specify
+any parameters for commands, you will be prompted for them.
 
 If the first argument doesn't match any of the commands, but IS a Note File alias,
 the rest of the commandline is added to that note file (which is created if applicable)
@@ -41,9 +42,8 @@ If the first argument doesn't match any of the commands OR a Note File alias,
 all note files are grepped for the remainder of the command line.
 
 ## Configuration Parameters
- LOG_LEVEL      - change to Trace, Debug, Information, Warning, Error, Fatal, None
- NOTES_LOCATION - the default place where any new aliased notes files will be created
-                  Has no impact on any file aliases already defined.
+* LOG_LEVEL      - change to Trace, Debug, Information, Warning, Error, Fatal, None
+* NOTES_LOCATION - the default place where any new aliased notes files will be created; Has no impact on any file aliases already defined.
 
 
 ## Walkthrough
