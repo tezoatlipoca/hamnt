@@ -45,6 +45,11 @@ all note files are grepped for the remainder of the command line.
 * LOG_LEVEL      - change to Trace, Debug, Information, Warning, Error, Fatal, None
 * NOTES_LOCATION - the default place where any new aliased notes files will be created; Has no impact on any file aliases already defined.
 
+## Data Store
+In `<user home>/.config/hamnt`, `hamnt` stores 
+* `hamnt.config.json` - configuration parameters above
+* `hamnt.notefiles.json` - all of your note file aliases
+These are read on launch and updated when `hamnt` quits. 
 
 ## Walkthrough
 Launch hamnt:
