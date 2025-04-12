@@ -4,6 +4,10 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:  # Allow manual triggers
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -31,15 +35,16 @@ jobs:
         dotnet publish -c Release -r ${{ matrix.rid }} \
           --self-contained true \
           -p:PublishSingleFile=true \
-          -p:EnableCompressionInSingleFile=true
+          -p:EnableCompressionInSingleFile=true || exit 1
 
     - name: Create Release Asset
+      if: success()
       run: |
-        cd bin/Release/net8.0/${{ matrix.rid }}/publish/
+        cd bin/Release/net8.0/${{ matrix.rid }}/publish/ || exit 1
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          7z a -tzip ../../../../../hamnt-${{ matrix.rid }}.zip hamnt.exe
+          7z a -tzip ../../../../../hamnt-${{ matrix.rid }}.zip hamnt.exe || exit 1
         else
-          tar czf ../../../../../hamnt-${{ matrix.rid }}.tar.gz hamnt
+          tar czf ../../../../../hamnt-${{ matrix.rid }}.tar.gz hamnt || exit 1
         fi
       shell: bash
 
@@ -47,5 +52,4 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          hamnt-${{ matrix.rid }}.zip
-          hamnt-${{ matrix.rid }}.tar.gz
+          hamnt-${{ matrix.rid }}.*
