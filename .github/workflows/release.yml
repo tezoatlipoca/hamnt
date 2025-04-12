@@ -24,7 +24,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
@@ -40,13 +40,14 @@ jobs:
             -p:PublishSingleFile=true \
             -p:EnableCompressionInSingleFile=true || exit 1
         fi
+      shell: bash
 
     - name: Create Release Asset
       if: success()
       run: |
         cd bin/Release/net8.0/${{ matrix.rid }}/publish/ || exit 1
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          7z a -tzip ../../../../../hamnt-${{ matrix.rid }}.zip hamnt.exe || exit 1
+          pwsh -c "7z a -tzip ../../../../../hamnt-${{ matrix.rid }}.zip hamnt.exe || exit 1"
         else
           tar czf ../../../../../hamnt-${{ matrix.rid }}.tar.gz hamnt || exit 1
         fi
