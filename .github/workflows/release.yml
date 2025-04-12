@@ -31,19 +31,15 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Build
-      run: |  
+      run: |
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
-        pwsh -c "
-          dotnet publish -c Release -r ${{ matrix.rid }} `
-          --self-contained true `
-          -p:PublishSingleFile=true `
-          -p:EnableCompressionInSingleFile=true
-        "
+          pwsh -c "dotnet publish -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true"
         else
-            dotnet publish -c Release -r ${{ matrix.rid }} \
-              --self-contained true \
-              -p:PublishSingleFile=true \
-              -p:EnableCompressionInSingleFile=true || exit 1
+          dotnet publish -c Release -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:EnableCompressionInSingleFile=true || exit 1
+        fi
 
     - name: Create Release Asset
       if: success()
