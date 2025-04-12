@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using System.IO;
 using hamnt; // Ensure this is included for file operations
 
 
@@ -8,6 +9,19 @@ class Program
 {
     static void Main(string[] args)
     {
+        // handle our self extraction if we're running as a snap
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP")))
+        {
+            Environment.SetEnvironmentVariable("DOTNET_BUNDLE_EXTRACT_BASE_DIR", 
+                Path.Combine(Environment.GetEnvironmentVariable("SNAP_USER_COMMON")!, "dotnet_extract"));
+        }
+        // Ensure extraction directory exists
+        var extractDir = Path.Combine(Environment.GetEnvironmentVariable("SNAP_USER_COMMON")!, "dotnet_extract");
+        if (!Directory.Exists(extractDir))
+        {
+            // Create the directory if it doesn't exist
+            Directory.CreateDirectory(extractDir);
+        }
         // Set up cleanup handlers
         Console.CancelKeyPress += new ConsoleCancelEventHandler(HandleCleanup);
         AppDomain.CurrentDomain.ProcessExit += new EventHandler(HandleProcessExit);

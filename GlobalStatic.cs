@@ -24,12 +24,24 @@ public static class GlobalStatic
     static GlobalStatic()
     {
 
-        // determine the user's home directory
-        string homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        // the CONFIG_FILE is user's home directory
-        // + "/.config/hamnt/hamnt_config.json"
-        NOTE_FILE_PATH = Path.Combine(homeDir, ".config", "hamnt", "hamnt.notefiles.json");
-        CONFIG_FILE_PATH = Path.Combine(homeDir, ".config", "hamnt", "hamnt.config.json");
+        // determine the user's home directory, accounting for snap environment
+        string homeDir;
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP_USER_COMMON")))
+        {
+            // We're running as a snap
+            homeDir = Environment.GetEnvironmentVariable("SNAP_USER_COMMON")!;
+            // For snap, we'll store everything directly in SNAP_USER_COMMON
+            NOTE_FILE_PATH = Path.Combine(homeDir, "hamnt.notefiles.json");
+            CONFIG_FILE_PATH = Path.Combine(homeDir, "hamnt.config.json");
+        }
+        else
+        {
+            // Standard installation
+            homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            // the CONFIG_FILE is user's home directory + "/.config/hamnt/hamnt_config.json"
+            NOTE_FILE_PATH = Path.Combine(homeDir, ".config", "hamnt", "hamnt.notefiles.json");
+            CONFIG_FILE_PATH = Path.Combine(homeDir, ".config", "hamnt", "hamnt.config.json");
+        }
         // check if the file exists
         if (!File.Exists(CONFIG_FILE_PATH))
         {
@@ -58,7 +70,15 @@ public static class GlobalStatic
         // the config file we just read in.
         if (!PARAMETERS.ContainsKey("NOTES_LOCATION"))
         {
-            PARAMETERS["NOTES_LOCATION"] = Path.Combine(homeDir, ".config", "hamnt", "notes");
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP_USER_COMMON")))
+            {
+                PARAMETERS["NOTES_LOCATION"] = Path.Combine(
+                    Environment.GetEnvironmentVariable("SNAP_USER_COMMON")!, "notes");
+            }
+            else
+            {
+                PARAMETERS["NOTES_LOCATION"] = Path.Combine(homeDir, ".config", "hamnt", "notes");
+            }
         }
         
         
