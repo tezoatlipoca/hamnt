@@ -17,7 +17,7 @@ The same actions+parameters work via command line or
 in a really basic interactive shell (good for rapid note taking
 w/o having to type `hamnt` over and over again).
 
-![Version](https://img.shields.io/github/v/tag/tezoatlipoca/hamnt?label=version)
+[![Version](https://img.shields.io/github/v/tag/tezoatlipoca/hamnt?label=version)](https://github.com/tezoatlipoca/hamnt/releases/tag/v0.1.0)
 
 ## Table of Contents
 - [Usage](#usage)
@@ -172,7 +172,7 @@ tezoatlipoca@pickles17:~$ hamnt grocery
 | lettuce
 | hamburgers
 ```
-````
+`````
 
 
 
