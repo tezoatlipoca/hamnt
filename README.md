@@ -19,14 +19,12 @@ w/o having to type `hamnt` over and over again).
 
 ![Version](https://img.shields.io/github/v/tag/tezoatlipoca/hamnt?label=version)
 
-<details>
-<summary>Table of Contents</summary>
+## Table of Contents
 - [Usage](#usage)
 - [Configuration Parameters](#configuration-parameters)
 - [Data Store](#data-store)
 - [Installation](#installation)
 - [Usage Walkthrough](#walkthrough)
-</details>
 
 ## Usage
 
