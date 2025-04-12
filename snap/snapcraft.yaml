@@ -18,22 +18,9 @@ apps:
 
 parts:
   hamnt:
-    plugin: dotnet
-    source: .
-    source-type: local
-    dotnet-build-configuration: Release
-    build-packages:
-      - dotnet-sdk-8.0
-      - ca-certificates
-    override-build: |
-      # Clear NuGet cache and configure package sources
-      rm -rf ~/.nuget
-      mkdir -p ~/.nuget/NuGet
-      echo '<?xml version="1.0" encoding="utf-8"?><configuration><packageSources><add key="nuget.org" value="https://api.nuget.org/v3/index.json" /></packageSources></configuration>' > ~/.nuget/NuGet/NuGet.Config
-      
-      # Restore packages explicitly before build
-      dotnet restore --runtime linux-x64
-      
-      # Build and publish
-      craftctl default
-      dotnet publish -c Release --self-contained true -p:PublishSingleFile=true
+    plugin: nil  # No build process
+    source: ./bin/Release/net8.0/linux-x64/publish  # Use the prebuilt binary directory
+    stage:
+      - hamnt  # Only include the binary
+    organize:
+      hamnt: bin/hamnt  # Place the binary in the correct location inside the snap
