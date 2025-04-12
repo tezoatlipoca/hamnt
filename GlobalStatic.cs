@@ -35,10 +35,16 @@ public static class GlobalStatic
         {
             // create the directory if it doesn't exist
             Directory.CreateDirectory(Path.GetDirectoryName(CONFIG_FILE_PATH!)!);
-            DBg.d(LogLevel.Trace, "Creating config file directory: " + CONFIG_FILE_PATH);
+            DBg.d(LogLevel.Warning, "Creating config file directory: " + CONFIG_FILE_PATH);
             // create the file
-            File.Create(CONFIG_FILE_PATH).Close();
-            DBg.d(LogLevel.Trace, "Creating config file: " + CONFIG_FILE_PATH);
+            var defaultConfig = new Dictionary<string, string>
+            {
+                { "LOG_LEVEL", LogLevel.Information.ToString() }
+            };
+            string json = JsonSerializer.Serialize(defaultConfig, JsonContext.Default.DictionaryStringString);
+            File.WriteAllText(CONFIG_FILE_PATH, json);
+            
+            DBg.d(LogLevel.Warning, "Creating config file: " + CONFIG_FILE_PATH);
         }
         // set the default log level to Information
         if (!PARAMETERS.ContainsKey("LOG_LEVEL"))
@@ -62,10 +68,10 @@ public static class GlobalStatic
         {
             // create the directory if it doesn't exist
             Directory.CreateDirectory(Path.GetDirectoryName(NOTE_FILE_PATH!)!);
-            DBg.d(LogLevel.Trace, "Creating config file directory: " + NOTE_FILE_PATH);
+            DBg.d(LogLevel.Trace, "Creating config directory: " + NOTE_FILE_PATH);
             // create the file
-            File.Create(NOTE_FILE_PATH).Close();
-            DBg.d(LogLevel.Trace, "Creating config file: " + NOTE_FILE_PATH);
+            File.WriteAllText(NOTE_FILE_PATH, "{}");
+            DBg.d(LogLevel.Trace, "Creating notes file: " + NOTE_FILE_PATH);
         }
         // read the note files from the config file
         ReadNoteFiles();
