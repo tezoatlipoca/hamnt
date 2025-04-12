@@ -33,10 +33,12 @@ jobs:
     - name: Build
       run: |  
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
+        pwsh -c "
           dotnet publish -c Release -r ${{ matrix.rid }} `
           --self-contained true `
           -p:PublishSingleFile=true `
-          -p:EnableCompressionInSingleFile=true || exit 1
+          -p:EnableCompressionInSingleFile=true
+        "
         else
           dotnet publish -c Release -r ${{ matrix.rid }} \
           --self-contained true \
