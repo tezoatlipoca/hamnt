@@ -6,8 +6,8 @@ ability to rapidly jot notes to completely disparate files without
 switching tabs, opening/closing files; or rapid grep through a bunch
 of files which may be in completely different locations. 
 
-Note files are _aliased_ so I don't have to care where they are,
-vs where I am in order to view, search or modify them. 
+Note files are _aliased_ so we don't have to care where they are,
+vs where we are in order to view, search or modify them. 
 e.g.: add `tomatoes` to my grocery list:
 ```bash
 tezoatlipoca@pickles17:~$ hamnt grocery tomatoes
@@ -93,7 +93,7 @@ foo_notes.txt
 2025-04-11T23:32:25 INFO  | Added note file: foo -> /home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt
 2025-04-11T23:32:25 WARN  | File does not exist but will if something is added to it: /home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt
 ```
-Now lets add some content to that file
+Add some content to that file
 ```bash
 (a/r/l/q) >>
 foo This text is added to foo_notes.txt
@@ -101,7 +101,7 @@ foo This text is added to foo_notes.txt
 2025-04-11T23:34:55 INFO  | File created: /home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt
 Adding 'This text is added to foo_notes.txt' to foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt)
 ```
-Now, if we just give the name of the file alias `foo`, it dumps the contents of that file:
+If we just give the name of the file alias `foo`, it dumps the contents of that file:
 ```bash
 (a/r/l/q) >>
 foo
@@ -129,7 +129,7 @@ todos.txt
 2025-04-11T23:38:36 INFO  | Added note file: todo -> /home/tezoatlipoca/note_vault/todos.txt
 2025-04-11T23:38:36 WARN  | File does not exist but will if something is added to it: /home/tezoatlipoca/note_vault/todos.txt
 ```
-The actual note file isn't created until content is first added though:
+.. but the actual note file isn't created until content is first added:
 ```bash
 (a/r/l/q) >>
 todo This text should show up in /note_vault/todos.txt
@@ -137,22 +137,22 @@ todo This text should show up in /note_vault/todos.txt
 2025-04-11T23:41:08 INFO  | File created: /home/tezoatlipoca/note_vault/todos.txt
 Adding 'This text should show up in /note_vault/todos.txt' to todo (/home/tezoatlipoca/note_vault/todos.txt)
 ```
-But what note file aliases are in use? 
+How do we know what note file aliases are in use? 
 ```bash
 (a/r/l/q) >>
 l
 foo -> /home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt
 todo -> /home/tezoatlipoca/note_vault/todos.txt
 ```
-Just entering some search text shows me which of my alias'd files contain it:
+Entering some search text shows me which of my alias'd files contain it:
 ```bash
 (a/r/l/q) >>
 This text
 foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt) == This text is added to foo_notes.txt
 todo (/home/tezoatlipoca/note_vault/todos.txt) == This text should show up in /note_vault/todos.txt
 ```
-When I quit, the list of all aliased note files and any configuration parameters are saved for next time.
-I can also perform the same actions but as command line parameters:
+When we quit, the list of all aliased note files and any configuration parameters are saved for next time.
+We can also perform the same actions but as command line parameters:
 ```bash
 ezoatlipoca@pickles17:~$ hamnt This text
 foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt) == This text is added to foo_notes.txt
