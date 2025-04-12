@@ -40,10 +40,10 @@ jobs:
           -p:EnableCompressionInSingleFile=true
         "
         else
-          dotnet publish -c Release -r ${{ matrix.rid }} \
-          --self-contained true \
-          -p:PublishSingleFile=true \
-          -p:EnableCompressionInSingleFile=true || exit 1
+            dotnet publish -c Release -r ${{ matrix.rid }} \
+              --self-contained true \
+              -p:PublishSingleFile=true \
+              -p:EnableCompressionInSingleFile=true || exit 1
 
     - name: Create Release Asset
       if: success()
