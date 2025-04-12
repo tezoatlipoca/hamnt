@@ -19,4 +19,16 @@
 # .NET Core
 project.lock.json
 project.fragment.lock.json
-artifacts/
+artifacts/parts/hamnt/build/
+parts/hamnt/install/hamnt
+parts/hamnt/run/build.sh
+parts/hamnt/run/environment.sh
+parts/hamnt/src/
+parts/hamnt/state/build
+parts/hamnt/state/prime
+parts/hamnt/state/pull
+parts/hamnt/state/stage
+parts/hamnt/build/
+prime/hamnt
+prime/meta/snap.yaml
+stage/hamnt
