@@ -18,9 +18,7 @@ apps:
 
 parts:
   hamnt:
-    plugin: nil  # No build process
-    source: ./bin/Release/net8.0/linux-x64/publish  # Use the prebuilt binary directory
-    stage:
-      - hamnt  # Only include the binary
+    plugin: dump
+    source: ./bin/Release/net8.0/linux-x64/publish/
     organize:
-      hamnt: bin/hamnt  # Place the binary in the correct location inside the snap
+      "hamnt": bin/hamnt
