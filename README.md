@@ -1,5 +1,5 @@
 # hamnt
-## Hyper Aggressively Minimal Note Taking CLI / Interactive shell app.
+**H**yper **A**ggressively **M**inimal **N**ote **T**aking CLI / Interactive shell app.
 
 There are lots of good note apps (Silver Bullet etc.), but I wanted the 
 ability to rapidly jot notes to completely disparate files without 
@@ -18,6 +18,14 @@ in a really basic interactive shell (good for rapid note taking
 w/o having to type `hamnt` over and over again).
 
 ![Version](https://img.shields.io/github/v/tag/tezoatlipoca/hamnt?label=version)
+
+<details>
+<summary>## Table of Contents</summary>
+  item 1
+  item 2
+</details>
+
+## Usage
 
 ```bash
 Usage: hamnt [options]
