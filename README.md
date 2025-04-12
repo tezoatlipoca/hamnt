@@ -72,7 +72,12 @@ git clone https://github.com/tezoatlipoca/hamnt.git
 cd hamnt
 dotnet publish -c Release
 ```
-### Debian/Ubuntu
+#### Snap Package (recommended)
+```bash
+sudo snap install hamnt
+```
+
+#### Debian/Ubuntu Package
 Download the .deb package from the [releases page](https://github.com/tezoatlipoca/hamnt/releases) and install:
 ```bash
 sudo dpkg -i hamnt_0.1.0_amd64.deb

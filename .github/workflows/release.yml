@@ -86,3 +86,29 @@ jobs:
         with:
           files: bin/Release/*.deb
 
+  create-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Snapcraft
+        run: |
+          sudo snap install snapcraft --classic
+          sudo snap install lxd
+          sudo lxd init --auto
+          
+      - name: Build Snap Package
+        run: snapcraft --use-lxd
+          if [ -f "/snap/bin/snapcraft" ]; then
+            snapcraft --use-lxd
+          else
+            echo "Skipping snap build in local testing environment"
+            exit 0
+          fi
+
+      - name: Upload Snap Package
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          files: hamnt*.snap
+
