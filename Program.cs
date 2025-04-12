@@ -13,7 +13,7 @@ class Program
         AppDomain.CurrentDomain.ProcessExit += new EventHandler(HandleProcessExit);
 
         // Application logic and command-line argument processing goes here
-        
+
         if (args.Length > 0)
         {
             DBg.d(LogLevel.Trace, "Command-line arguments:");
@@ -32,14 +32,15 @@ class Program
             // execute in CLI mode
             GlobalStatic.interactiveMode = false;
         }
-        else {
+        else
+        {
             Console.WriteLine($"HAMNT - Hyper Aggressively Minimal Note Taking app // VERSION: {GlobalStatic.bldVersion}");
 
         }
         // we can re-use the while { switch } loop for CLI mode by  
         // setting command <-- q if we're not in interactive mode
         var command = string.Empty;
-
+        var reason = string.Empty;
         // default mode is continuous - loop asking for user input, quit on q
         // a - adds a note file with provided (and quoted) "alias" and "filepath"
         // r - removes a note file with provided (and quoted) "alias"
@@ -48,7 +49,8 @@ class Program
         //      
         while (command != "q")
         {
-            if(GlobalStatic.interactiveMode) {
+            if (GlobalStatic.interactiveMode)
+            {
                 Console.WriteLine("(a/r/l/q) >>");
             }
             var inline = string.Empty;
@@ -63,9 +65,13 @@ class Program
                 inline = string.Join(" ", args); // this trashes any previous spaces. 
             }
 
-            command = inline?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? string.Empty;
+            var tokens = inline?.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(token => token.StartsWith("\"") && token.EndsWith("\"") ? token.Trim('"') : token)
+                                .ToArray() ?? Array.Empty<string>();
+            command = tokens.FirstOrDefault() ?? string.Empty;
             if (string.IsNullOrEmpty(command))
             {
+                reason = "Nothing to do/no args.";
                 continue;
             }
             switch (command)
@@ -74,7 +80,7 @@ class Program
                 case "a":
                 case "-a":
                     {
-                        engine.AddNoteFile(inline!);
+                        engine.AddNoteFile(tokens);
                         if (!GlobalStatic.interactiveMode) { command = "q"; }
                         ;
                         break;
@@ -84,7 +90,7 @@ class Program
                 case "-r":
                 case "r":
                     {
-                        engine.RemoveNoteFile(inline!);
+                        engine.RemoveNoteFile(tokens);
                         if (!GlobalStatic.interactiveMode) { command = "q"; }
                         ;
                         break;
@@ -94,7 +100,7 @@ class Program
                 case "-l":
                 case "l":
                     {
-                        engine.ListNoteFiles(inline!);
+                        engine.ListNoteFiles();
                         if (!GlobalStatic.interactiveMode) { command = "q"; }
                         ;
                         break;
@@ -104,7 +110,7 @@ class Program
                 case "-s":
                 case "s":
                     {
-                        engine.SetParameter(inline!);
+                        engine.SetParameter(tokens);
                         if (!GlobalStatic.interactiveMode) { command = "q"; }
                         ;
                         break;
@@ -122,7 +128,7 @@ class Program
                 case "-q":
                 case "q":
                     {
-
+                        reason = "Quit command given.";
                         break;
                     }
 
@@ -143,16 +149,18 @@ class Program
                         Console.WriteLine("In interactive mode, you can use the single letter commands without the leading - or --\n");
                         Console.WriteLine("If the first argument doesn't match any of the commands, but IS a Note File alias,\n the rest of the commandline is added to that note file (which is created if applicable).\n");
                         Console.WriteLine("If the first argument doesn't match any of the command OR a Note File alias, \nall note files are grepped for the remainder of the command line.\n");
-                         if (!GlobalStatic.interactiveMode) { command = "q"; }
+                        if (!GlobalStatic.interactiveMode) { command = "q"; }
                         ;
                         break;
                     }
-                default: {
-                    DBg.d(LogLevel.Trace, "--> search " + command);
-                    engine.Search(inline!, command);
-                    if (!GlobalStatic.interactiveMode) { command = "q"; }
-                    break;
-                }
+
+                default:
+                    {
+                        DBg.d(LogLevel.Trace, "--> search [" + string.Join(" ", tokens) + "]");
+                        engine.Search(tokens);
+                        if (!GlobalStatic.interactiveMode) { command = "q"; }
+                        break;
+                    }
             } // end switch
 
 
@@ -161,12 +169,19 @@ class Program
         } // end while
         // we're wrapping up 
         // write the note files back to the note files config file
-        GlobalStatic.WriteNoteFiles();
-        cleanupPerformed = true;
-        if(GlobalStatic.interactiveMode)
+        if (GlobalStatic.noteFilesChanged)
         {
-            Console.WriteLine("Exiting program.");
-        }        
+            GlobalStatic.WriteNoteFiles();
+        }
+        cleanupPerformed = true;
+        if (string.IsNullOrEmpty(reason))
+        {
+            //Console.WriteLine("Exiting program.");
+        }
+        else
+        {
+            Console.WriteLine($"Exiting program: {reason}");
+        }
 
 
     }
@@ -181,7 +196,10 @@ class Program
         Console.WriteLine("Received termination signal, cleaning up...");
 
         // Save note files
-        GlobalStatic.WriteNoteFiles();
+        if (GlobalStatic.noteFilesChanged)
+        {
+            GlobalStatic.WriteNoteFiles();
+        }
         cleanupPerformed = true;
         //DBg.d(LogLevel.Trace, "Cleanup complete, exiting.");
 
@@ -194,6 +212,11 @@ class Program
         if (cleanupPerformed) return;
         // This handler catches other termination scenarios
         Console.WriteLine("Process exiting, performing final cleanup...");
-        GlobalStatic.WriteNoteFiles();
+        if (GlobalStatic.noteFilesChanged)
+        {
+            // Save note files
+            GlobalStatic.WriteNoteFiles();
+        }
+
     }
 }

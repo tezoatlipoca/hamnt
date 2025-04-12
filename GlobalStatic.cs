@@ -19,6 +19,7 @@ public static class GlobalStatic
     public static Dictionary<string, string> PARAMETERS = new();
     public static bool interactiveMode = true;
 
+    public static bool noteFilesChanged = false; // taint flag; if changed, save before exit.
     // define a constructor
     static GlobalStatic()
     {
@@ -30,6 +31,33 @@ public static class GlobalStatic
         NOTE_FILE_PATH = Path.Combine(homeDir, ".config", "hamnt", "hamnt.notefiles.json");
         CONFIG_FILE_PATH = Path.Combine(homeDir, ".config", "hamnt", "hamnt.config.json");
         // check if the file exists
+        if (!File.Exists(CONFIG_FILE_PATH))
+        {
+            // create the directory if it doesn't exist
+            Directory.CreateDirectory(Path.GetDirectoryName(CONFIG_FILE_PATH!)!);
+            DBg.d(LogLevel.Trace, "Creating config file directory: " + CONFIG_FILE_PATH);
+            // create the file
+            File.Create(CONFIG_FILE_PATH).Close();
+            DBg.d(LogLevel.Trace, "Creating config file: " + CONFIG_FILE_PATH);
+        }
+        // set the default log level to Information
+        if (!PARAMETERS.ContainsKey("LOG_LEVEL"))
+        {
+            PARAMETERS["LOG_LEVEL"] = LogLevel.Information.ToString();
+        }
+        
+        // which means we never get Trace or Debug in .ReadConfigFile, but whatever. 
+        ReadConfigFile();
+        // now set default PARAMETERS values but ONLY if they weren't in 
+        // the config file we just read in.
+        if (!PARAMETERS.ContainsKey("NOTES_LOCATION"))
+        {
+            PARAMETERS["NOTES_LOCATION"] = Path.Combine(homeDir, ".config", "hamnt", "notes");
+        }
+        
+        
+        
+        
         if (!File.Exists(NOTE_FILE_PATH))
         {
             // create the directory if it doesn't exist
@@ -41,32 +69,14 @@ public static class GlobalStatic
         }
         // read the note files from the config file
         ReadNoteFiles();
-        if (!File.Exists(CONFIG_FILE_PATH))
-        {
-            // create the directory if it doesn't exist
-            Directory.CreateDirectory(Path.GetDirectoryName(CONFIG_FILE_PATH!)!);
-            DBg.d(LogLevel.Trace, "Creating config file directory: " + CONFIG_FILE_PATH);
-            // create the file
-            File.Create(CONFIG_FILE_PATH).Close();
-            DBg.d(LogLevel.Trace, "Creating config file: " + CONFIG_FILE_PATH);
-        }
-        ReadConfigFile();
+        
 
         // lastly get the AssemblyInformationalVersion attribute from the assembly and store it in a static variable
         var bldVersionAttribute = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>();
         // convert it to a string and store it in a static variable
         bldVersion = bldVersionAttribute?.InformationalVersion;
 
-        // now set default PARAMETERS values but ONLY if they weren't in 
-        // the config file we just read in.
-        if (!PARAMETERS.ContainsKey("NOTES_LOCATION"))
-        {
-            PARAMETERS["NOTES_LOCATION"] = Path.Combine(homeDir, ".config", "hamnt", "notes");
-        }
-        if (!PARAMETERS.ContainsKey("LOG_LEVEL"))
-        {
-            PARAMETERS["LOG_LEVEL"] = LogLevel.Trace.ToString();
-        }
+        
 
 
 
@@ -123,6 +133,7 @@ public static class GlobalStatic
             try
             {
                 string json = File.ReadAllText(CONFIG_FILE_PATH);
+                DBg.d(LogLevel.Trace, "JSON:" + json);
                 var config = JsonSerializer.Deserialize(json, JsonContext.Default.DictionaryStringString);
                 if (config != null)
                 {

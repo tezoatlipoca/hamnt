@@ -10,18 +10,17 @@ namespace hamnt
     public class hamntEngine
     {
 
-        public void AddNoteFile(string inline)
+        public void AddNoteFile(string[] tokens)
         {
             var alias = string.Empty;
             var filePath = string.Empty;
             if (GlobalStatic.interactiveMode)
             {
-                DBg.d(LogLevel.Trace, "Adding note file");
                 Console.WriteLine("Enter alias: ");
                 alias = Console.ReadLine();
-                if(string.IsNullOrEmpty(alias))
+                if (string.IsNullOrEmpty(alias))
                 {
-                    Console.WriteLine("Error: No list alias specified.");
+                    DBg.d(LogLevel.Error,"Error: No list alias specified.");
                     return;
                 }
                 if (!string.IsNullOrEmpty(GlobalStatic.PARAMETERS["NOTES_LOCATION"]))
@@ -35,30 +34,28 @@ namespace hamnt
                 filePath = Console.ReadLine();
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    Console.WriteLine("Error: No note filename/path specified.");
+                    DBg.d(LogLevel.Error,"No note filename/path specified.");
                     return;
                 }
             }
             else
             {
-                // alias is the 2nd token in inline
-                var tokens = inline.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                // alias is the 2nd token in tokens array
                 if (tokens.Length < 3)
                 {
-                    Console.WriteLine("Error: No note file alias or filename specified.");
+                    DBg.d(LogLevel.Error,"No note file alias or filename specified.");
                     return;
                 }
                 alias = tokens[1];
                 filePath = tokens[2];
             }
-            // if the alias is already in the dictionary,remind the user which file it is
+            // if the alias is already in the dictionary, remind the user which file it is
             if (GlobalStatic.NOTE_FILES.ContainsKey(alias))
             {
-                Console.WriteLine($"Alias '{alias}' already exists: {GlobalStatic.NOTE_FILES[alias]}");
-                Console.WriteLine($"If you want to redefine it, please remove '{alias}' first.");
+                DBg.d(LogLevel.Warning, $"Alias '{alias}' already exists: {GlobalStatic.NOTE_FILES[alias]}");
+                DBg.d(LogLevel.Warning,$"If you want to redefine it, please remove '{alias}' first.");
                 return;
             }
-
 
             // determine if the file path is an absolute or relative path
             // if it's relative, make it absolute
@@ -75,65 +72,61 @@ namespace hamnt
                     // use the current directory
                     filePath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
                 }
-
             }
             GlobalStatic.NOTE_FILES[alias] = filePath;
-            DBg.d(LogLevel.Trace, $"Added note file: {alias} -> {filePath}");
-
-
+            DBg.d(LogLevel.Information, $"Added note file: {alias} -> {filePath}");
+            GlobalStatic.noteFilesChanged = true;
 
             if (!File.Exists(filePath))
             {
                 // create the file
-                //File.Create(filePath).Close();
                 DBg.d(LogLevel.Warning, $"File does not exist but will if something is added to it: {filePath}");
             }
-            else
-            {
-                //DBg.d(LogLevel.Trace, $"Note file already exists: {filePath}");
-            }
         }
-        public void RemoveNoteFile(string inline)
+        public void RemoveNoteFile(string[] tokens)
         {
             var alias = string.Empty;
             if (GlobalStatic.interactiveMode)
             {
-                DBg.d(LogLevel.Trace, "Removing note file");
                 Console.WriteLine("Enter alias: ");
                 alias = Console.ReadLine();
-                if(string.IsNullOrEmpty(alias))
+                if (string.IsNullOrEmpty(alias))
                 {
-                    Console.WriteLine("Error: No note file alias specified.");
+                    DBg.d(LogLevel.Error,"No note file alias specified.");
+                    return;
+                }
+                else if (!GlobalStatic.NOTE_FILES.ContainsKey(alias))
+            
+                {
+                    DBg.d(LogLevel.Warning, $"Alias {alias} not found.");
                     return;
                 }
             }
             else
             {
-                // alias is the 2nd token in inline
-                var tokens = inline.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                // alias is the 2nd token in tokens array
                 if (tokens.Length < 2)
                 {
-                    Console.WriteLine("Error: No note file alias to delete specified.");
+                    DBg.d(LogLevel.Error, "No note file alias to delete specified.");
                     return;
                 }
                 alias = tokens[1];
             }
 
-
             if (GlobalStatic.NOTE_FILES.ContainsKey(alias))
             {
                 GlobalStatic.NOTE_FILES.Remove(alias);
-                DBg.d(LogLevel.Trace, $"Removed note file: {alias}");
+                DBg.d(LogLevel.Information, $"Removed note file: {alias}");
+                GlobalStatic.noteFilesChanged = true;
             }
             else
             {
                 DBg.d(LogLevel.Warning, $"Alias {alias} not found.");
             }
-
-
         }
 
-        public void ListNoteFiles(string inline)
+
+        public void ListNoteFiles()
         {
             DBg.d(LogLevel.Trace, "Listing note files");
             foreach (var noteFile in GlobalStatic.NOTE_FILES)
@@ -141,27 +134,44 @@ namespace hamnt
                 Console.WriteLine($"{noteFile.Key} -> {noteFile.Value}");
             }
         }
-        public void SetParameter(string inline)
+        public void SetParameter(string[] tokens)
         {
             bool didAnytingChange = false;
             var paramName = string.Empty;
             var paramValue = string.Empty;
+            var originalParamValue = string.Empty;
             // if we get here via cli, the parameter name will be 2nd param, value 3rd
             // if we get here via interactive mode we can prompt
             if (GlobalStatic.interactiveMode)
             {
                 Console.WriteLine("Enter parameter name: ");
                 paramName = Console.ReadLine();
+                if (string.IsNullOrEmpty(paramName))
+                {
+                    DBg.d(LogLevel.Error, "Parameter name is null or empty.");
+                    return;
+                }
+                var validParams = new HashSet<string> { "NOTES_LOCATION", "LOG_LEVEL" };
+                if (!validParams.Contains(paramName))
+                {
+                    DBg.d(LogLevel.Error, $"Parameter '{paramName}' not valid.");
+                    return;
+                }
                 Console.WriteLine("Enter parameter value: ");
                 paramValue = Console.ReadLine();
+                if (string.IsNullOrEmpty(paramValue))
+                {
+                    DBg.d(LogLevel.Error, "Parameter value is null or empty.");
+                    return;
+                }
             }
             else
             {
-                var tokens = inline.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                
                 if (tokens.Length < 3)
                 {
-                    Console.WriteLine("Error: Not enough parameters. Try `hamnt --set <parameter> <value>`");
-                    Console.WriteLine("       parameters: NOTES_LOCATION, LOG_LEVEL");
+                    DBg.d(LogLevel.Error, "Not enough parameters. Try `hamnt --set <parameter> <value>`");
+                    DBg.d(LogLevel.Error, "           parameters: NOTES_LOCATION, LOG_LEVEL");
                     return;
                 }
                 paramName = tokens[1];
@@ -172,7 +182,7 @@ namespace hamnt
             // check to see if the parameter name is not null/empty
             if (string.IsNullOrEmpty(paramName))
             {
-                Console.WriteLine("Error: Parameter name is null or empty.");
+                DBg.d(LogLevel.Error, "Parameter name is null or empty.");
                 return;
             }
 
@@ -182,7 +192,7 @@ namespace hamnt
                     // check to see if the parameter value is not null/empty
                     if (string.IsNullOrEmpty(paramValue))
                     {
-                        Console.WriteLine("Error: No NOTES_LOCATION provided.");
+                        DBg.d(LogLevel.Error, "No NOTES_LOCATION provided.");
                         return;
                     }
                     else
@@ -190,39 +200,58 @@ namespace hamnt
                         // check to see if the parameter value is a valid path
                         if (!Path.IsPathRooted(paramValue))
                         {
-                            Console.WriteLine($"Warning: NOTES_LOCATION '{paramValue}' is not a valid path; will be created if needed");
+                            DBg.d(LogLevel.Warning, $"NOTES_LOCATION '{paramValue}' is not a valid path; will be created if needed");
 
                         }
 
                         // check to see if the parameter value is a directory
                         if (!Directory.Exists(paramValue))
                         {
-                            Console.WriteLine($"Warning: NOTES_LOCATION '{paramValue}' is not a directory.");
+                            DBg.d(LogLevel.Warning, $"NOTES_LOCATION '{paramValue}' is not a directory.");
 
                         }
+                        originalParamValue = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
                         GlobalStatic.PARAMETERS["NOTES_LOCATION"] = paramValue;
-                        didAnytingChange = true;
-                        DBg.d(LogLevel.Trace, $"Set NOTES_LOCATION: {paramValue}");
+                        if(originalParamValue != paramValue)
+                        {
+                         
+                            didAnytingChange = true;
+                            DBg.d(LogLevel.Trace, $"Set NOTES_LOCATION: {paramValue}");
+                        }
+                        else
+                        {
+                            DBg.d(LogLevel.Warning, $"NOTES_LOCATION already set to {paramValue}");
+                        }
                     }
                     break;
                 case "LOG_LEVEL":
                     // check to see if the parameter value is not null/empty
                     if (string.IsNullOrEmpty(paramValue))
                     {
-                        Console.WriteLine("Error: LOG_LEVEL is null or empty.");
+                        DBg.d(LogLevel.Error, "LOG_LEVEL is null or empty.");
                         return;
                     }
                     // check to see if the parameter value is a valid LogLevel
                     if (!Enum.TryParse(typeof(LogLevel), paramValue, true, out _))
                     {
-                        Console.WriteLine($"Error: LOG_LEVEL '{paramValue}' is not valid. Try one of: {string.Join(", ", Enum.GetNames(typeof(LogLevel)))}.");
+                        DBg.d(LogLevel.Error, $"LOG_LEVEL '{paramValue}' is not valid. Try one of: {string.Join(", ", Enum.GetNames(typeof(LogLevel)))}.");
                         return;
                     }
                     else
                     {
-                        // set the parameter value
-                        GlobalStatic.SetLogLevel((LogLevel)Enum.Parse(typeof(LogLevel), paramValue));
-                        didAnytingChange = true;
+                        // set the parameter value.. if it CHANGED value that is...
+                        originalParamValue = GlobalStatic.PARAMETERS["LOG_LEVEL"];
+                        if(originalParamValue != paramValue)
+                        {
+                            GlobalStatic.SetLogLevel((LogLevel)Enum.Parse(typeof(LogLevel), paramValue));
+                            didAnytingChange = true;
+                            DBg.d(LogLevel.Trace, $"Set LOG_LEVEL: {paramValue}");
+                        }
+                        else
+                        {
+                            DBg.d(LogLevel.Warning, $"LOG_LEVEL already set to {paramValue}");
+                        }
+                        
                     }
                     break;
                 default:
@@ -238,28 +267,30 @@ namespace hamnt
             }
         }
 
-        public void Search(string inline, string command)
+        public void Search(string[] tokens)
         {
-            DBg.d(LogLevel.Trace, $"command: {command} - inline: {inline}");
+            DBg.d(LogLevel.Trace, $"Search: [{string.Join(" ", tokens)}]");
             // the first token of the inline isn't one of our key words
             // does it match one of the notefile aliases? 
-            if (GlobalStatic.NOTE_FILES.ContainsKey(command))
+            string inline = string.Empty;
+            if (GlobalStatic.NOTE_FILES.ContainsKey(tokens[0]))
             {
-                var noteFile = new KeyValuePair<string, string>(command, GlobalStatic.NOTE_FILES[command]);
+                DBg.d(LogLevel.Trace, $"First token IS file alias: {tokens[0]}");
+                var noteFile = new KeyValuePair<string, string>(tokens[0], GlobalStatic.NOTE_FILES[tokens[0]]);
                 // remove the command from the inline
-                var commandtokens = inline?.Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1);
                 // print the command tokens debug
-                for(int i = 0; i < commandtokens!.Count(); i++)
+                for (int i = 1; i < tokens.Count(); i++)
                 {
-                    DBg.d(LogLevel.Trace, $"Command token {i}: {commandtokens!.ElementAt(i)}");
+                    DBg.d(LogLevel.Trace, $"token {i}: {tokens.ElementAt(i)}");
                 }
-
-                DBg.d(LogLevel.Trace, $"Command tokens.count: {commandtokens!.Count()}");
-                if((commandtokens != null) && commandtokens.Count() > 0)
+                
+                DBg.d(LogLevel.Trace, $"tokens.count: {tokens.Count()}");
+                if ((tokens != null) && tokens.Count() > 0)
                 {
-                    inline = string.Join(" ", commandtokens);
+                    inline = string.Join(" ", tokens.Skip(1));
                 }
-                else {
+                else
+                {
                     inline = string.Empty;
                 }
                 DBg.d(LogLevel.Trace, $"inline: {inline}");
@@ -268,13 +299,17 @@ namespace hamnt
                 if (string.IsNullOrEmpty(inline))
                 {
                     // read the file and print it to the console
-                    if(GlobalStatic.interactiveMode) {
-                        Console.WriteLine($"Contents of {noteFile.Key} ({noteFile.Value}):");
+                    //if(GlobalStatic.interactiveMode) {
+                    Console.WriteLine($"======= {noteFile.Key} ({noteFile.Value}) ".PadRight(Console.WindowWidth - 1, '='));
+                    //}
+                    var fileLines = File.ReadAllLines(noteFile.Value);
+                    foreach (var line in fileLines)
+                    {
+                        Console.WriteLine($"| {line}");
                     }
-                    Console.WriteLine(File.ReadAllText(noteFile.Value));
                     return;
                 }
-                
+
 
 
                 if (!File.Exists(noteFile.Value))
@@ -301,14 +336,14 @@ namespace hamnt
                                                     .Where(line => line.IndexOf(inline, StringComparison.OrdinalIgnoreCase) >= 0)
                                                     .ToList();
                 if (matchingLines.Any())
-                    {
+                {
 
-                        foreach (var match in matchingLines)
-                        {
-                            Console.WriteLine($"{noteFile.Key} ({noteFile.Value}) == {match}");
-                        }
+                    foreach (var match in matchingLines)
+                    {
+                        Console.WriteLine($"{noteFile.Key} ({noteFile.Value}) == {match}");
                     }
-                    
+                }
+
                 else
                 {
                     Console.WriteLine($"Adding '{inline}' to {noteFile.Key} ({noteFile.Value})");
@@ -325,7 +360,17 @@ namespace hamnt
             }
             else
             {
-
+                DBg.d(LogLevel.Trace, $"tokens.count: {tokens.Count()}");
+                if ((tokens != null) && tokens.Count() > 0)
+                {
+                    inline = string.Join(" ", tokens);
+                }
+                else
+                {
+                    inline = string.Empty;
+                }
+                
+                DBg.d(LogLevel.Trace, $"First token NOT file alias - searching for all [ {inline} ]");
                 // greap ALL of the note files for this string
                 foreach (var noteFile in GlobalStatic.NOTE_FILES)
                 {

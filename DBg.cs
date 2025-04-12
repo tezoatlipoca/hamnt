@@ -34,8 +34,7 @@ using System;
             // try and cast GlobalStatic.PARAMETERS["LOG_LEVEL"]
             // back to a LogLevel; if it fails, default to Trace
             LogLevel gsCurrLevel = LogLevel.Trace;
-            if (GlobalStatic.PARAMETERS["LOG_LEVEL"] is not null)
-            {
+            if (GlobalStatic.PARAMETERS is not null && GlobalStatic.PARAMETERS.ContainsKey("LOG_LEVEL") && GlobalStatic.PARAMETERS["LOG_LEVEL"] is not null) {
                 try
                 {
                     gsCurrLevel = (LogLevel)Enum.Parse(typeof(LogLevel), GlobalStatic.PARAMETERS["LOG_LEVEL"]);
