@@ -96,6 +96,9 @@ jobs:
           sudo snap install snapcraft --classic
           sudo snap install lxd
           sudo lxd init --auto
+          # Add the current user to the lxd group
+          sudo usermod -aG lxd $USER
+          newgrp lxd
           
       - name: Build Snap Package
         run: |
