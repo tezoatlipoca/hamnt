@@ -75,13 +75,15 @@ dotnet publish -c Release
 #### Snap Package (recommended)
 Need to fix bug in default snap storage permissions. 
 ~~Application to the Ubuntu store is being processed. Until then...~~
-<!-->```bash
+<!-- 
+```bash
 # Download the snap package
 wget https://github.com/tezoatlipoca/hamnt/releases/download/v0.1.0/hamnt_0.1.0_amd64.snap
 
 # Install it locally (--dangerous flag needed for non-store snaps)
 sudo snap install --dangerous hamnt_0.1.0_amd64.snap
-```-->
+```
+-->
 
 #### Debian/Ubuntu Package
 Download the .deb package from the [releases page](https://github.com/tezoatlipoca/hamnt/releases) and install:
