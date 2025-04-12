@@ -98,7 +98,8 @@ jobs:
           sudo lxd init --auto
           # Add the current user to the lxd group
           sudo usermod -aG lxd $USER
-          newgrp lxd
+          # Explicitly restart the shell to apply group changes
+          sg lxd -c 'snapcraft --use-lxd'
           
       - name: Build Snap Package
         run: |
