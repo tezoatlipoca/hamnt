@@ -111,5 +111,5 @@ jobs:
         if: success()
         uses: softprops/action-gh-release@v1
         with:
-          files: *.snap
+          files: "*.snap"
 
