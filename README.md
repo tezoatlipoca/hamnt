@@ -73,8 +73,13 @@ cd hamnt
 dotnet publish -c Release
 ```
 #### Snap Package (recommended)
+Application to the Ubuntu store is being processed. Until then...
 ```bash
-sudo snap install hamnt
+# Download the snap package
+wget https://github.com/tezoatlipoca/hamnt/releases/download/v0.1.0/hamnt_0.1.0_amd64.snap
+
+# Install it locally (--dangerous flag needed for non-store snaps)
+sudo snap install --dangerous hamnt_0.1.0_amd64.snap
 ```
 
 #### Debian/Ubuntu Package
@@ -82,6 +87,7 @@ Download the .deb package from the [releases page](https://github.com/tezoatlipo
 ```bash
 sudo dpkg -i hamnt_0.1.0_amd64.deb
 ```
+
 
 ## Walkthrough
 Launch hamnt:
