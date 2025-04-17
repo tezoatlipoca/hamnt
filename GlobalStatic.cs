@@ -23,10 +23,10 @@ public static class GlobalStatic
     // define a constructor
     static GlobalStatic()
     {
-
-        // determine the user's home directory, accounting for snap environment
+        // determine the user's home directory
         string homeDir;
-        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP_USER_COMMON")))
+
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP")))
         {
             // We're running as a snap
             homeDir = Environment.GetEnvironmentVariable("SNAP_USER_COMMON")!;
@@ -34,9 +34,19 @@ public static class GlobalStatic
             NOTE_FILE_PATH = Path.Combine(homeDir, "hamnt.notefiles.json");
             CONFIG_FILE_PATH = Path.Combine(homeDir, "hamnt.config.json");
         }
+        else if (OperatingSystem.IsWindows())
+        {
+            // On Windows, use AppData/Local
+            homeDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            NOTE_FILE_PATH = Path.Combine(homeDir, "hamnt", "hamnt.notefiles.json");
+            CONFIG_FILE_PATH = Path.Combine(homeDir, "hamnt", "hamnt.config.json");
+            
+            // Ensure the directory exists
+            Directory.CreateDirectory(Path.Combine(homeDir, "hamnt"));
+        }
         else
         {
-            // Standard installation
+            // Standard Linux/macOS installation
             homeDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             // the CONFIG_FILE is user's home directory + "/.config/hamnt/hamnt_config.json"
             NOTE_FILE_PATH = Path.Combine(homeDir, ".config", "hamnt", "hamnt.notefiles.json");
