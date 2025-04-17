@@ -66,7 +66,7 @@ stores
 * `hamnt.config.json` - configuration parameters above
 * `hamnt.notefiles.json` - all of your note file aliases
 
-These are read on launch and updated when `hamnt` quits. 
+These are read on launch and updated when `hamnt` quits, or when contents change. 
 
 The default NOTES_LOCATION is a `\notes` subfolder of the configuration folder above. 
 
