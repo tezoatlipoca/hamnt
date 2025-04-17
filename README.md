@@ -57,10 +57,23 @@ all note files are grepped for the remainder of the command line.
 * NOTES_LOCATION - the default place where any new aliased notes files will be created; Has no impact on any file aliases already defined.
 
 ## Data Store
-In `<user home>/.config/hamnt`, `hamnt` stores 
+In 
+* `<user home>/.config/hamnt` - Linux (package or .deb)
+* `<user home>/snap/hamnt/common` - Snap (linux) - see WARNING below.
+* `<user home>\AppData\Local\hamnt` - Windows
+
+stores 
 * `hamnt.config.json` - configuration parameters above
 * `hamnt.notefiles.json` - all of your note file aliases
+
 These are read on launch and updated when `hamnt` quits. 
+
+The default NOTES_LOCATION is a `\notes` subfolder of the configuration folder above. 
+
+**SNAP WARNING** - The snap of hamnt stores data in a folder (`/snap/hamnt/common`) which is retained whenever 
+the snap is updated (upgrade or downgrade). If the snap of hamnt is _removed_, however, this folder is deleted.
+It is strongly recommended that you change your NOTES_LOCATION to outside of the snaps folder, so the default 
+location for new aliased notes files is in a folder that will not be trashed if you remove the snap. 
 
 ## Installation
 ### From Release
