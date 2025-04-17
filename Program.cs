@@ -14,13 +14,27 @@ class Program
         {
             Environment.SetEnvironmentVariable("DOTNET_BUNDLE_EXTRACT_BASE_DIR", 
                 Path.Combine(Environment.GetEnvironmentVariable("SNAP_USER_COMMON")!, "dotnet_extract"));
+                
+            // Ensure extraction directory exists
+            var extractDir = Path.Combine(Environment.GetEnvironmentVariable("SNAP_USER_COMMON")!, "dotnet_extract");
+            if (!Directory.Exists(extractDir))
+            {
+                // Create the directory if it doesn't exist
+                Directory.CreateDirectory(extractDir);
+            }
         }
-        // Ensure extraction directory exists
-        var extractDir = Path.Combine(Environment.GetEnvironmentVariable("SNAP_USER_COMMON")!, "dotnet_extract");
-        if (!Directory.Exists(extractDir))
+        else if (OperatingSystem.IsWindows())
         {
-            // Create the directory if it doesn't exist
-            Directory.CreateDirectory(extractDir);
+            // On Windows, use a directory in the user's AppData folder
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string extractDir = Path.Combine(appDataPath, "hamnt", "dotnet_extract");
+            
+            Environment.SetEnvironmentVariable("DOTNET_BUNDLE_EXTRACT_BASE_DIR", extractDir);
+            
+            if (!Directory.Exists(extractDir))
+            {
+                Directory.CreateDirectory(extractDir);
+            }
         }
         // Set up cleanup handlers
         Console.CancelKeyPress += new ConsoleCancelEventHandler(HandleCleanup);
