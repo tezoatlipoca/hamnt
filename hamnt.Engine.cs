@@ -20,7 +20,7 @@ namespace hamnt
                 alias = Console.ReadLine();
                 if (string.IsNullOrEmpty(alias))
                 {
-                    DBg.d(LogLevel.Error,"Error: No list alias specified.");
+                    DBg.d(LogLevel.Error, "Error: No list alias specified.");
                     return;
                 }
                 if (!string.IsNullOrEmpty(GlobalStatic.PARAMETERS["NOTES_LOCATION"]))
@@ -34,7 +34,7 @@ namespace hamnt
                 filePath = Console.ReadLine();
                 if (string.IsNullOrEmpty(filePath))
                 {
-                    DBg.d(LogLevel.Error,"No note filename/path specified.");
+                    DBg.d(LogLevel.Error, "No note filename/path specified.");
                     return;
                 }
             }
@@ -43,7 +43,7 @@ namespace hamnt
                 // alias is the 2nd token in tokens array
                 if (tokens.Length < 3)
                 {
-                    DBg.d(LogLevel.Error,"No note file alias or filename specified.");
+                    DBg.d(LogLevel.Error, "No note file alias or filename specified.");
                     return;
                 }
                 alias = tokens[1];
@@ -53,7 +53,7 @@ namespace hamnt
             if (GlobalStatic.NOTE_FILES.ContainsKey(alias))
             {
                 DBg.d(LogLevel.Warning, $"Alias '{alias}' already exists: {GlobalStatic.NOTE_FILES[alias]}");
-                DBg.d(LogLevel.Warning,$"If you want to redefine it, please remove '{alias}' first.");
+                DBg.d(LogLevel.Warning, $"If you want to redefine it, please remove '{alias}' first.");
                 return;
             }
 
@@ -92,11 +92,11 @@ namespace hamnt
                 alias = Console.ReadLine();
                 if (string.IsNullOrEmpty(alias))
                 {
-                    DBg.d(LogLevel.Error,"No note file alias specified.");
+                    DBg.d(LogLevel.Error, "No note file alias specified.");
                     return;
                 }
                 else if (!GlobalStatic.NOTE_FILES.ContainsKey(alias))
-            
+
                 {
                     DBg.d(LogLevel.Warning, $"Alias {alias} not found.");
                     return;
@@ -151,7 +151,7 @@ namespace hamnt
                     DBg.d(LogLevel.Error, "Parameter name is null or empty.");
                     return;
                 }
-                var validParams = new HashSet<string> { "NOTES_LOCATION", "LOG_LEVEL" };
+                var validParams = new HashSet<string> { "NOTES_LOCATION", "LOG_LEVEL", "CASE_SENSITIVE", "MATCH_MODE" };
                 if (!validParams.Contains(paramName))
                 {
                     DBg.d(LogLevel.Error, $"Parameter '{paramName}' not valid.");
@@ -167,11 +167,11 @@ namespace hamnt
             }
             else
             {
-                
+
                 if (tokens.Length < 3)
                 {
                     DBg.d(LogLevel.Error, "Not enough parameters. Try `hamnt --set <parameter> <value>`");
-                    DBg.d(LogLevel.Error, "           parameters: NOTES_LOCATION, LOG_LEVEL");
+                    DBg.d(LogLevel.Error, "           parameters: NOTES_LOCATION, LOG_LEVEL, CASE_SENSITIVE");
                     return;
                 }
                 paramName = tokens[1];
@@ -212,9 +212,9 @@ namespace hamnt
                         }
                         originalParamValue = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
                         GlobalStatic.PARAMETERS["NOTES_LOCATION"] = paramValue;
-                        if(originalParamValue != paramValue)
+                        if (originalParamValue != paramValue)
                         {
-                         
+
                             didAnytingChange = true;
                             DBg.d(LogLevel.Trace, $"Set NOTES_LOCATION: {paramValue}");
                         }
@@ -241,7 +241,7 @@ namespace hamnt
                     {
                         // set the parameter value.. if it CHANGED value that is...
                         originalParamValue = GlobalStatic.PARAMETERS["LOG_LEVEL"];
-                        if(originalParamValue != paramValue)
+                        if (originalParamValue != paramValue)
                         {
                             GlobalStatic.SetLogLevel((LogLevel)Enum.Parse(typeof(LogLevel), paramValue));
                             didAnytingChange = true;
@@ -251,7 +251,68 @@ namespace hamnt
                         {
                             DBg.d(LogLevel.Warning, $"LOG_LEVEL already set to {paramValue}");
                         }
-                        
+
+                    }
+                    break;
+                case "CASE_SENSITIVE":
+                    // check to see if the parameter value is not null/empty
+                    if (string.IsNullOrEmpty(paramValue))
+                    {
+                        DBg.d(LogLevel.Error, "CASE_SENSITIVE is null or empty.");
+                        return;
+                    }
+                    // check to see if the parameter value is a valid LogLevel
+                    if (!bool.TryParse(paramValue, out _))
+                    {
+                        DBg.d(LogLevel.Error, $"CASE_SENSITIVE '{paramValue}' is not valid. Try one of: true, false.");
+                        return;
+                    }
+                    else
+                    {
+                        // set the parameter value.. if it CHANGED value that is...
+                        originalParamValue = GlobalStatic.PARAMETERS["CASE_SENSITIVE"];
+                        if (originalParamValue != paramValue)
+                        {
+                            GlobalStatic.PARAMETERS["CASE_SENSITIVE"] = paramValue;
+                            didAnytingChange = true;
+                            DBg.d(LogLevel.Trace, $"Set CASE_SENSITIVE: {paramValue}");
+                        }
+                        else
+                        {
+                            DBg.d(LogLevel.Warning, $"CASE_SENSITIVE already set to {paramValue}");
+                        }
+
+                    }
+                    break;
+                case "MATCH_MODE":
+                    // check to see if the parameter value is not null/empty
+                    if (string.IsNullOrEmpty(paramValue))
+                    {
+                        DBg.d(LogLevel.Error, "MATCH_MODE is null or empty.");
+                        return;
+                    }
+
+                    // Check if it's a valid match mode
+                    var validMatchModes = new[] { "Contains", "Exact", "Any" };
+                    if (!validMatchModes.Contains(paramValue, StringComparer.OrdinalIgnoreCase))
+                    {
+                        DBg.d(LogLevel.Error, $"MATCH_MODE '{paramValue}' is not valid. Try one of: {string.Join(", ", validMatchModes)}.");
+                        return;
+                    }
+                    else
+                    {
+                        // set the parameter value if it changed
+                        originalParamValue = GlobalStatic.PARAMETERS["MATCH_MODE"];
+                        if (originalParamValue != paramValue)
+                        {
+                            GlobalStatic.PARAMETERS["MATCH_MODE"] = paramValue;
+                            didAnytingChange = true;
+                            DBg.d(LogLevel.Trace, $"Set MATCH_MODE: {paramValue}");
+                        }
+                        else
+                        {
+                            DBg.d(LogLevel.Warning, $"MATCH_MODE already set to {paramValue}");
+                        }
                     }
                     break;
                 default:
@@ -266,7 +327,175 @@ namespace hamnt
                 GlobalStatic.WriteConfigFile();
             }
         }
+        public void EditNoteFile(string[] tokens)
+        {
+            var alias = string.Empty;
+            if (GlobalStatic.interactiveMode)
+            {
+                Console.WriteLine("Enter alias: ");
+                alias = Console.ReadLine();
+                if (string.IsNullOrEmpty(alias))
+                {
+                    DBg.d(LogLevel.Error, "No note file alias specified.");
+                    return;
+                }
+            }
+            else
+            {
+                // alias is the 2nd token in tokens array
+                if (tokens.Length < 2)
+                {
+                    DBg.d(LogLevel.Error, "No note file alias specified.");
+                    return;
+                }
+                alias = tokens[1];
+            }
 
+            if (GlobalStatic.NOTE_FILES.ContainsKey(alias))
+            {
+                var filePath = GlobalStatic.NOTE_FILES[alias];
+                //filePath = $"\"{filePath}\"";
+                // Check if the file exists
+                if (!File.Exists(filePath))
+                {
+                    DBg.d(LogLevel.Warning, $"File {filePath} does not exist.");
+                    return;
+                }
+                try
+                {
+                    if (OperatingSystem.IsWindows())
+                    {
+                        // Use Process.Start to open file with default application in Windows
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = filePath,
+                            UseShellExecute = true
+                        });
+                        DBg.d(LogLevel.Information, $"Opened {alias} ({filePath}) with default application");
+                    }
+                    else if (OperatingSystem.IsLinux())
+                    {
+                        // For Linux, we need to consider terminal-based editors
+
+                        // Check if EDITOR environment variable is set
+                        string editor = Environment.GetEnvironmentVariable("EDITOR") ?? string.Empty;
+                        if (string.IsNullOrEmpty(editor))
+                        {
+                            // Fallback to xdg-open if EDITOR is not set
+                            editor = "xdg-open";
+                            DBg.d(LogLevel.Warning, "env{EDITOR} not set (e.g. export EDITOR=vi), using xdg-open as fallback.");
+                        }
+                        // For any editor, use the current terminal by executing it directly
+                        var process = new System.Diagnostics.Process
+                        {
+                            StartInfo = new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = editor,
+                                Arguments = $"\"{filePath}\"",
+                                UseShellExecute = false
+                            }
+                        };
+
+                        try
+                        {
+                            process.Start();
+                            process.WaitForExit();
+                            DBg.d(LogLevel.Information, $"Finished editing {alias} with {editor}");
+                        }
+                        catch (Exception ex)
+                        {
+                            // If the editor fails (not found, etc.), fall back to xdg-open
+                            DBg.d(LogLevel.Warning, $"Failed to open with {editor}: {ex.Message}");
+                            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                            {
+                                FileName = "xdg-open",
+                                Arguments = $"\"{filePath}\"",
+                                UseShellExecute = true
+                            });
+                            DBg.d(LogLevel.Information, $"Opened {alias} ({filePath}) with default application");
+                        }
+                    }
+                    else if (OperatingSystem.IsMacOS())
+                    {
+                        // On macOS, use open
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = "open",
+                            Arguments = filePath,
+                            UseShellExecute = true
+                        });
+                        DBg.d(LogLevel.Information, $"Opened {alias} ({filePath}) with default application");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DBg.d(LogLevel.Error, $"Failed to open {alias} ({filePath}): {ex.Message}");
+                }
+            }
+            else
+            {
+                DBg.d(LogLevel.Warning, $"Alias {alias} not found.");
+            }
+        }
+
+        // public bool ChangeDirectory(string[] tokens)
+        // {
+        //     var alias = string.Empty;
+        //     if (GlobalStatic.interactiveMode)
+        //     {
+        //         Console.WriteLine("Enter alias: ");
+        //         alias = Console.ReadLine();
+        //         if (string.IsNullOrEmpty(alias))
+        //         {
+        //             DBg.d(LogLevel.Error, "No note file alias specified.");
+        //             return false;
+        //         }
+        //     }
+        //     else
+        //     {
+        //         // alias is the 2nd token in tokens array
+        //         if (tokens.Length < 2)
+        //         {
+        //             DBg.d(LogLevel.Error, "No note file alias specified.");
+        //             return false; ;
+        //         }
+        //         alias = tokens[1];
+        //     }
+
+        //     if (GlobalStatic.NOTE_FILES.ContainsKey(alias))
+        //     {
+        //         var filePath = GlobalStatic.NOTE_FILES[alias];
+        //         // does it exist? 
+        //         if (!File.Exists(filePath))
+        //         {
+        //             DBg.d(LogLevel.Warning, $"File {filePath} does not exist.");
+        //             return false;
+        //         }
+        //         else
+        //         {
+        //             // get the containing directory of the file
+        //             var path = Path.GetDirectoryName(filePath);
+        //             if (path == null)
+        //             {
+        //                 DBg.d(LogLevel.Error, $"Error: Unable to get directory name for {filePath}");
+        //                 return false;
+        //             }
+        //             else
+        //             {
+        //                 // set the current directory to the file's directory
+        //                 Directory.SetCurrentDirectory(path);
+        //                 return true;
+        //             }
+        //         }
+        //     }
+        //     else
+        //         {
+        //             DBg.d(LogLevel.Warning, $"Alias {alias} not found.");
+        //             return false;
+
+        //         }
+
+        //     }
         public void Search(string[] tokens)
         {
             DBg.d(LogLevel.Trace, $"Search: [{string.Join(" ", tokens)}]");
@@ -283,7 +512,7 @@ namespace hamnt
                 {
                     DBg.d(LogLevel.Trace, $"token {i}: {tokens.ElementAt(i)}");
                 }
-                
+
                 DBg.d(LogLevel.Trace, $"tokens.count: {tokens.Count()}");
                 if ((tokens != null) && tokens.Count() > 0)
                 {
@@ -331,10 +560,36 @@ namespace hamnt
                 // Read all contents of the file
                 string fileContents = File.ReadAllText(noteFile.Value);
 
-                // Check if the file contents contain the string inline (case-insensitive)
+                // Check if the file contents contain the string inline
+                StringComparison comparisonType = GlobalStatic.PARAMETERS["CASE_SENSITIVE"] == "true"
+                    ? StringComparison.Ordinal
+                    : StringComparison.OrdinalIgnoreCase;
+
+                // Determine the match mode (default to Contains if not set)
+                string matchMode = GlobalStatic.PARAMETERS.ContainsKey("MATCH_MODE")
+                    ? GlobalStatic.PARAMETERS["MATCH_MODE"]
+                    : "Contains";
+
                 var matchingLines = fileContents.Split(Environment.NewLine)
-                                                    .Where(line => line.IndexOf(inline, StringComparison.OrdinalIgnoreCase) >= 0)
-                                                    .ToList();
+                    .Where(line =>
+                    {
+                        switch (matchMode.ToLower())
+                        {
+                            case "exact":
+                                return string.Equals(line, inline, comparisonType);
+
+                            case "any":
+                                var searchTokens = tokens.Skip(1).ToArray(); // Skip file alias
+                                return searchTokens.Any(token =>
+                                    line.IndexOf(token, comparisonType) >= 0);
+
+                            case "contains":
+                            default:
+                                return line.IndexOf(inline, comparisonType) >= 0;
+                        }
+                    })
+                    .ToList();
+
                 if (matchingLines.Any())
                 {
 
@@ -369,7 +624,7 @@ namespace hamnt
                 {
                     inline = string.Empty;
                 }
-                
+
                 DBg.d(LogLevel.Trace, $"First token NOT file alias - searching for all [ {inline} ]");
                 // greap ALL of the note files for this string
                 foreach (var noteFile in GlobalStatic.NOTE_FILES)
@@ -385,10 +640,35 @@ namespace hamnt
                     // Read all contents of the file
                     string fileContents = File.ReadAllText(filePath);
 
-                    // Check if the file contents contain the string inline (case-insensitive)
+                    // Check if the file contents contain the string inline
+                    StringComparison comparisonType = GlobalStatic.PARAMETERS["CASE_SENSITIVE"] == "true"
+                        ? StringComparison.Ordinal
+                        : StringComparison.OrdinalIgnoreCase;
+
+                    // Determine the match mode (default to Contains if not set)
+                    string matchMode = GlobalStatic.PARAMETERS.ContainsKey("MATCH_MODE")
+                        ? GlobalStatic.PARAMETERS["MATCH_MODE"]
+                        : "Contains";
+
                     var matchingLines = fileContents.Split(Environment.NewLine)
-                                                    .Where(line => line.IndexOf(inline, StringComparison.OrdinalIgnoreCase) >= 0)
-                                                    .ToList();
+                        .Where(line =>
+                        {
+                            switch (matchMode.ToLower())
+                            {
+                                case "exact":
+                                    return string.Equals(line, inline, comparisonType);
+
+                                case "any":
+                                    var searchTokens = tokens; // Use all tokens for global search
+                                    return searchTokens.Any(token =>
+                                        line.IndexOf(token, comparisonType) >= 0);
+
+                                case "contains":
+                                default:
+                                    return line.IndexOf(inline, comparisonType) >= 0;
+                            }
+                        })
+                        .ToList();
 
                     if (matchingLines.Any())
                     {

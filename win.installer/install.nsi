@@ -1,0 +1,71 @@
+; Basic installer script for hamnt
+!include "MUI2.nsh"
+
+; General Settings
+Name "Hamnt"
+OutFile "hamnt-installer.exe"
+InstallDir "$PROGRAMFILES\Hamnt"
+InstallDirRegKey HKCU "Software\Hamnt" ""
+RequestExecutionLevel admin
+
+; Version Information
+VIProductVersion "0.1.0.0"
+VIAddVersionKey "ProductName" "Hamnt"
+VIAddVersionKey "FileDescription" "HyperAggressively Minimal Note Taking app"
+VIAddVersionKey "LegalCopyright" "© tezoatlipoca@gmail.com"
+VIAddVersionKey "FileVersion" "0.1.0"
+
+; Interface Settings
+!define MUI_ABORTWARNING
+!define MUI_ICON "hamnt.ico" ; Optional: Replace with your icon path
+
+; Pages
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+
+; Languages
+!insertmacro MUI_LANGUAGE "English"
+
+; Installer Sections
+Section "Install"
+  SetOutPath "$INSTDIR"
+  
+  ; Add files
+  File "../bin/Release/net8.0/win-x64/publish/hamnt.exe"
+  ; File "path/to/other/files/*.*" ; Add any other files your app needs
+  
+  ; Create Start Menu shortcuts
+  CreateDirectory "$SMPROGRAMS\Hamnt"
+  CreateShortcut "$SMPROGRAMS\Hamnt\Hamnt.lnk" "$INSTDIR\hamnt.exe"
+  CreateShortcut "$SMPROGRAMS\Hamnt\Uninstall.lnk" "$INSTDIR\uninstall.exe"
+  
+  ; Create uninstaller
+  WriteUninstaller "$INSTDIR\uninstall.exe"
+  
+  ; Write registry keys for uninstall
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" \
+                   "DisplayName" "Hamnt"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" \
+                   "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+SectionEnd
+
+; Uninstaller Section
+Section "Uninstall"
+  ; Remove files and folders
+  Delete "$INSTDIR\hamnt.exe"
+  Delete "$INSTDIR\uninstall.exe"
+    ; Add commands to delete any other files
+  
+  ; Remove shortcuts
+  Delete "$SMPROGRAMS\Hamnt\Hamnt.lnk"
+  Delete "$SMPROGRAMS\Hamnt\Uninstall.lnk"
+  RMDir "$SMPROGRAMS\Hamnt"
+  
+  ; Remove directories
+  RMDir "$INSTDIR"
+  
+  ; Remove registry keys
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt"
+SectionEnd

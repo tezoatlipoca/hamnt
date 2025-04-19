@@ -133,7 +133,29 @@ class Program
                         ;
                         break;
                     }
-
+                case "--edit":
+                case "-e":
+                case "e":
+                    {
+                        engine.EditNoteFile(tokens);
+                        if (!GlobalStatic.interactiveMode) { command = "q"; }
+                        ;
+                        break;
+                    }
+                // case "--cd":
+                // case "-c":
+                // case "c":
+                //     {
+                //         if(engine.ChangeDirectory(tokens)) {
+                //             command = "q";
+                //             break;
+                //         } else {
+                            
+                //         };
+                //         if (!GlobalStatic.interactiveMode) { command = "q"; }
+                //         ;
+                //         break;
+                //     }
                 case "--set":
                 case "-s":
                 case "s":
@@ -171,6 +193,7 @@ class Program
                         Console.WriteLine("  -l, --list                     List all note files");
                         Console.WriteLine("  -s, --set                      Set a (configuration) parameter");
                         Console.WriteLine("  -v, --version                  Show version information");
+                        Console.WriteLine("  -e, --edit <alias>                    Edit a note file (alias) in the default editor");
                         Console.WriteLine("  -q, --quit                     Quit the program");
                         Console.WriteLine("  -h, --help                     Show this help message\n");
                         Console.WriteLine("Launching hamnt with no arguments will enter interactive mode.");
