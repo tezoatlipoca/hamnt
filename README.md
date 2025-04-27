@@ -59,9 +59,10 @@ all note files are grepped for the remainder of the command line.
 * LOG_LEVEL      - change to Trace, Debug, Information, Warning, Error, Fatal, None
 * NOTES_LOCATION - the default place where any new aliased notes files will be created; Has no impact on any file aliases already defined.
 * CASE_SENSITIVE - true/false(default); pertains to searches in your notes file
-* MATCH_MODE     - Contains (default) - note file matches will hit on any line that _contains_ the input you give
-                   Exact - note file matches will hit on any line that _exactly matches_ the input you give
-                   Any - note file matches will hit on any line that _contains any of the words from_ the input you give
+* MATCH_MODE
+    * Contains (default) - note file matches will hit on any line that _contains_ the input you give
+    * Exact - note file matches will hit on any line that _exactly matches_ the input you give
+    * Any - note file matches will hit on any line that _contains any of the words from_ the input you give
 * VERBOSE_OUTPUT - true/false(default) - datetime and file/function/line# debugging info are displayed depending on the LOG_LEVEL.  
 
 ## Data Store
@@ -110,10 +111,15 @@ Download the .deb package from the [releases page](https://github.com/tezoatlipo
 sudo dpkg -i hamnt_0.2.0_amd64.deb
 ```
 #### Windows
-Installation is still manual (still working on the installer and github Action to create it). For now, 
-1. Download the Windows exe package from the [releases page](https://github.com/tezoatlipoca/hamnt/releases)
-2. Extact the zip and copy `hamnt.exe` somewhere
-3. Add that somewhere to your path (edit %PATH% in Windows Environment variables)
+Download the Windows exe package from the [releases page](https://github.com/tezoatlipoca/hamnt/releases)
+1. Extact the zip and copy `hamnt.exe` somewhere
+2. Add that somewhere to your path (edit %PATH% in Windows Environment variables)
+
+OR
+Download the Windows SETUP exe from [releases page](https://github.com/tezoatlipoca/hamnt/releases)
+and run it. It modifies your `%PATH%` Environment variable for you, but you may have to 
+restart any powershell/cmd sessions for it to take effect. 
+
 
 ## Walkthrough
 Launch hamnt:
