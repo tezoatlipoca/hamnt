@@ -77,11 +77,25 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: choco install nsis -y
 
+    - name: Show current directory and files before makensis
+      if: matrix.os == 'windows-latest'
+      run: |
+        pwd
+        ls -l
+        ls -l bin/Release/net8.0/win-x64/publish
+      shell: bash
+
+    - name: Debug List files in workspace
+      if: matrix.os == 'windows-latest'
+      run: |
+        ls -l $GITHUB_WORKSPACE
+        ls -l $GITHUB_WORKSPACE/win.installer
+      shell: pwsh
+
     - name: Build NSIS Installer
       if: matrix.os == 'windows-latest'
       run: |
-        cd $GITHUB_WORKSPACE
-        & "C:\Program Files (x86)\NSIS\makensis.exe" "win.installer\install.nsi"
+        & "C:\Program Files (x86)\NSIS\makensis.exe" "$env:GITHUB_WORKSPACE/win.installer/install.nsi"
       shell: pwsh
 
     - name: Upload NSIS Installer
