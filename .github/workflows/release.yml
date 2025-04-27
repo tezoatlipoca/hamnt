@@ -46,6 +46,16 @@ jobs:
         fi
       shell: bash
 
+    - name: Show full path to win-x64 publish folder
+      if: matrix.os == 'windows-latest'
+      run: |
+        echo "Full path to publish folder:"
+        cd bin/Release/net8.0/win-x64/publish
+        pwd
+        echo "Contents of publish folder:"
+        ls -l
+      shell: bash
+
     - name: Create Release Asset
       if: success()
       run: |
