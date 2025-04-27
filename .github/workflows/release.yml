@@ -85,6 +85,16 @@ jobs:
         ls -l bin/Release/net8.0/win-x64/publish
       shell: bash
 
+    - name: DEBUG-Confirm hamnt.exe exists for NSIS
+      if: matrix.os == 'windows-latest'
+      run: |
+        if (Test-Path "bin\Release\net8.0\win-x64\publish\hamnt.exe") {
+          Write-Host "hamnt.exe found!"
+        } else {
+          Write-Host "hamnt.exe NOT FOUND!"
+        }
+      shell: pwsh
+
     - name: Build NSIS Installer
       if: matrix.os == 'windows-latest'
       run: |
