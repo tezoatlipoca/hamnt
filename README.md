@@ -110,13 +110,10 @@ Download the .deb package from the [releases page](https://github.com/tezoatlipo
 sudo dpkg -i hamnt_0.2.0_amd64.deb
 ```
 #### Windows
-```
-# Download the installer (replace URL with the actual link from the release page)
-Invoke-WebRequest -Uri "https://github.com/tezoatlipoca/hamnt/releases/download/v0.2.0/hamnt-win-x64.zip" -OutFile "hamnt-installer.exe"
-
-# Run the installer
-Start-Process .\hamnt-installer.exe
-```
+Installation is still manual (still working on the installer and github Action to create it). For now, 
+1. Download the Windows exe package from the [releases page](https://github.com/tezoatlipoca/hamnt/releases)
+2. Extact the zip and copy `hamnt.exe` somewhere
+3. Add that somewhere to your path (edit %PATH% in Windows Environment variables)
 
 ## Walkthrough
 Launch hamnt:
