@@ -1,5 +1,5 @@
 name: hamnt
-version: '0.1.0'
+version: '0.2.0'
 summary: Hyper Aggressively Minimal Note Taking CLI
 description: |
   CLI and interactive shell app for rapid note taking across multiple files.

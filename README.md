@@ -17,7 +17,7 @@ The same actions+parameters work via command line or
 in a really basic interactive shell (good for rapid note taking
 w/o having to type `hamnt` over and over again).
 
-[![Version](https://img.shields.io/github/v/tag/tezoatlipoca/hamnt?label=version)](https://github.com/tezoatlipoca/hamnt/releases/tag/v0.1.0)
+[![Version](https://img.shields.io/github/v/tag/tezoatlipoca/hamnt?label=version)](https://github.com/tezoatlipoca/hamnt/releases/tag/v0.2.0)
 
 ## Table of Contents
 - [Usage](#usage)
@@ -91,15 +91,15 @@ Application to the Ubuntu store is being processed. Until then...
  
 ```bash
 # Download the snap package
-wget https://github.com/tezoatlipoca/hamnt/releases/download/v0.1.0/hamnt_0.1.0_amd64.snap
+wget https://github.com/tezoatlipoca/hamnt/releases/download/v0.2.0/hamnt_0.2.0_amd64.snap
 
 # Install it locally (--dangerous flag needed for non-store snaps)
-sudo snap install --dangerous hamnt_0.1.0_amd64.snap
+sudo snap install --dangerous hamnt_0.2.0_amd64.snap
 ```
 #### Debian/Ubuntu Package
 Download the .deb package from the [releases page](https://github.com/tezoatlipoca/hamnt/releases) and install:
 ```bash
-sudo dpkg -i hamnt_0.1.0_amd64.deb
+sudo dpkg -i hamnt_0.2.0_amd64.deb
 ```
 
 
