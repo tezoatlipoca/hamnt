@@ -85,13 +85,6 @@ jobs:
         ls -l bin/Release/net8.0/win-x64/publish
       shell: bash
 
-    - name: Debug List files in workspace
-      if: matrix.os == 'windows-latest'
-      run: |
-        ls -l $GITHUB_WORKSPACE
-        ls -l $GITHUB_WORKSPACE/win.installer
-      shell: pwsh
-
     - name: Build NSIS Installer
       if: matrix.os == 'windows-latest'
       run: |
