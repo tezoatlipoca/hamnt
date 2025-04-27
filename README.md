@@ -36,7 +36,7 @@ Options:
   -l, --list                     List all note files
   -s, --set                      Set a (configuration) parameter
   -v, --version                  Show version information
-  -e, --edit <alias>             Edits the note file with OS's default editor (or in linux, whatever you `export EDITOR=<vi, vim etc.>`
+  -e, --edit <alias>             Edits the note file with OSs default editor (or in linux, whatever you `export EDITOR=<vi, vim etc.>`
   -q, --quit                     Quit the program
   -h, --help                     Show this help message
 ```
