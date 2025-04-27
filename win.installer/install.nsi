@@ -33,7 +33,8 @@ Section "Install"
   SetOutPath "$INSTDIR"
   
   ; Add files
-  File "../bin/Release/net8.0/win-x64/publish/hamnt.exe"
+  File "../bin/Release/net8.0/win-x64/publish/hamnt.${VERSION}.win-x64.exe"
+  Rename "$INSTDIR\hamnt.${VERSION}.win-x64.exe" "$INSTDIR\hamnt.exe"
   ; File "path/to/other/files/*.*" ; Add any other files your app needs
   
   ; Create Start Menu shortcuts
