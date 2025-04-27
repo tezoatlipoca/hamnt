@@ -29,6 +29,11 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
+    - name: Set version variable
+      id: version
+      run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+      shell: bash
+
     - name: Build
       run: |
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
@@ -46,9 +51,9 @@ jobs:
       run: |
         cd bin/Release/net8.0/${{ matrix.rid }}/publish/ || exit 1
         if [ "${{ matrix.os }}" = "windows-latest" ]; then
-          pwsh -c "7z a -tzip ../../../../../hamnt-${{ matrix.rid }}.zip hamnt.exe || exit 1"
+          pwsh -c "7z a -tzip ../../../../../hamnt.${VERSION}.win-x64.zip hamnt.exe || exit 1"
         else
-          tar czf ../../../../../hamnt-${{ matrix.rid }}.tar.gz hamnt || exit 1
+          tar czf ../../../../../hamnt.${VERSION}.linux-x64.tar.gz hamnt || exit 1
         fi
       shell: bash
 
@@ -57,6 +62,21 @@ jobs:
       with:
         files: |
           hamnt-${{ matrix.rid }}.*
+
+    - name: Install NSIS
+      if: matrix.os == 'windows-latest'
+      run: choco install nsis -y
+
+    - name: Build NSIS Installer
+      if: matrix.os == 'windows-latest'
+      run: |
+        "C:\Program Files (x86)\NSIS\makensis.exe" win.installer\install.nsi
+
+    - name: Upload NSIS Installer
+      if: matrix.os == 'windows-latest' && success()
+      uses: softprops/action-gh-release@v1
+      with:
+        files: win.installer\hamnt-*-setup.exe
 
   create-deb:
     needs: build

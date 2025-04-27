@@ -3,7 +3,7 @@
 
 ; General Settings
 Name "Hamnt"
-OutFile "hamnt-installer.exe"
+OutFile "hamnt-0.2.0-setup.exe"
 InstallDir "$PROGRAMFILES\Hamnt"
 InstallDirRegKey HKCU "Software\Hamnt" ""
 RequestExecutionLevel admin
@@ -54,6 +54,9 @@ Section "Install"
   ReadRegStr $0 HKCU "Environment" "Path"
   StrCpy $1 "$INSTDIR;$0"
   WriteRegStr HKCU "Environment" "Path" "$1"
+
+  ; Broadcast WM_SETTINGCHANGE to update environment variables
+  System::Call 'user32::SendMessageTimeoutA(i 0xffff, i ${WM_SETTINGCHANGE}, i 0, t "Environment", i 0, i 1000, *i .r0)'
 SectionEnd
 
 ; Uninstaller Section
