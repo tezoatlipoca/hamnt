@@ -36,6 +36,7 @@ Options:
   -l, --list                     List all note files
   -s, --set                      Set a (configuration) parameter
   -v, --version                  Show version information
+  -e, --edit <alias>             Edits the note file with OS's default editor (or in linux, whatever you `export EDITOR=<vi, vim etc.>`
   -q, --quit                     Quit the program
   -h, --help                     Show this help message
 ```
@@ -44,6 +45,8 @@ Launching hamnt with no arguments will enter interactive mode.
 In interactive mode, you can use the single letter commands without the leading - or --
 and uer input continues until `q`uit; in interactive mode, you don't have to specify
 any parameters for commands, you will be prompted for them.
+If you provide a valid command AND the right number of arguments, hamnt will
+try to execute it directly. 
 
 If the first argument doesn't match any of the commands, but IS a Note File alias,
 the rest of the commandline is added to that note file (which is created if applicable)
@@ -55,6 +58,11 @@ all note files are grepped for the remainder of the command line.
 ## Configuration Parameters
 * LOG_LEVEL      - change to Trace, Debug, Information, Warning, Error, Fatal, None
 * NOTES_LOCATION - the default place where any new aliased notes files will be created; Has no impact on any file aliases already defined.
+* CASE_SENSITIVE - true/false(default); pertains to searches in your notes file
+* MATCH_MODE     - Contains (default) - note file matches will hit on any line that _contains_ the input you give
+                   Exact - note file matches will hit on any line that _exactly matches_ the input you give
+                   Any - note file matches will hit on any line that _contains any of the words from_ the input you give
+* VERBOSE_OUTPUT - true/false(default) - datetime and file/function/line# debugging info are displayed depending on the LOG_LEVEL.  
 
 ## Data Store
 In 
@@ -101,7 +109,14 @@ Download the .deb package from the [releases page](https://github.com/tezoatlipo
 ```bash
 sudo dpkg -i hamnt_0.2.0_amd64.deb
 ```
+#### Windows
+```
+# Download the installer (replace URL with the actual link from the release page)
+Invoke-WebRequest -Uri "https://github.com/tezoatlipoca/hamnt/releases/download/v0.2.0/hamnt-win-x64.zip" -OutFile "hamnt-installer.exe"
 
+# Run the installer
+Start-Process .\hamnt-installer.exe
+```
 
 ## Walkthrough
 Launch hamnt:
