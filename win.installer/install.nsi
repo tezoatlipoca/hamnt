@@ -33,10 +33,10 @@ Section "Install"
   SetOutPath "$INSTDIR"
   
   ; Show the path we're looking for the binary in
-  DetailPrint "Looking for binary at: $EXEDIR\..\bin\Release\net8.0\win-x64\publish\hamnt.exe"
+  DetailPrint "Looking for binary at: bin\Release\net8.0\win-x64\publish\hamnt.exe"
   
   ; Add files
-  File /oname=hamnt.exe "../bin/Release/net8.0/win-x64/publish/hamnt.exe"
+  File /oname=hamnt.exe "bin/Release/net8.0/win-x64/publish/hamnt.exe"
   ; File "path/to/other/files/*.*" ; Add any other files your app needs
   
   ; Create Start Menu shortcuts
