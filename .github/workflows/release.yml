@@ -61,7 +61,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          hamnt-${{ matrix.rid }}.*
+          hamnt.${{ env.VERSION }}.*
 
     - name: Install NSIS
       if: matrix.os == 'windows-latest'
@@ -70,7 +70,7 @@ jobs:
     - name: Build NSIS Installer
       if: matrix.os == 'windows-latest'
       run: |
-        "C:\Program Files (x86)\NSIS\makensis.exe" win.installer\install.nsi
+        "C:\Program Files (x86)\NSIS\makensis.exe" "win.installer\install.nsi"
 
     - name: Upload NSIS Installer
       if: matrix.os == 'windows-latest' && success()
