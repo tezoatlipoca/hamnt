@@ -107,6 +107,10 @@ public static class GlobalStatic
         {
             PARAMETERS["MATCH_MODE"] = "Contains";
         }
+        if (!PARAMETERS.ContainsKey("VERBOSE_OUTPUT"))
+        {
+            PARAMETERS["VERBOSE_OUTPUT"] = "false";
+        }
         
 
 

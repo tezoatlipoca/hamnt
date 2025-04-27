@@ -79,7 +79,7 @@ class Program
         {
             if (GlobalStatic.interactiveMode)
             {
-                Console.WriteLine("(a/r/l/q) >>");
+                Console.Write("(a/r/l/s/e/v/h/q) > ");
             }
             var inline = string.Empty;
             if (GlobalStatic.interactiveMode)

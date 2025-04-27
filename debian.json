@@ -1,7 +1,7 @@
 {
   "Package": {
     "Name": "hamnt",
-    "Version": "0.1.0",
+    "Version": "0.2.0",
     "Architecture": "amd64",
     "Maintainer": "tezoatlipoca <tezoatlipoca@gmail.com>",
     "Description": "Hyper Aggressively Minimal Note Taking CLI / Interactive shell app.",

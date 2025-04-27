@@ -9,11 +9,11 @@ InstallDirRegKey HKCU "Software\Hamnt" ""
 RequestExecutionLevel admin
 
 ; Version Information
-VIProductVersion "0.1.0.0"
+VIProductVersion "0.2.0.0"
 VIAddVersionKey "ProductName" "Hamnt"
 VIAddVersionKey "FileDescription" "HyperAggressively Minimal Note Taking app"
 VIAddVersionKey "LegalCopyright" "© tezoatlipoca@gmail.com"
-VIAddVersionKey "FileVersion" "0.1.0"
+VIAddVersionKey "FileVersion" "0.2.0"
 
 ; Interface Settings
 !define MUI_ABORTWARNING
@@ -49,6 +49,11 @@ Section "Install"
                    "DisplayName" "Hamnt"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" \
                    "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+  
+  ; Add install directory to user PATH
+  ReadRegStr $0 HKCU "Environment" "Path"
+  StrCpy $1 "$INSTDIR;$0"
+  WriteRegStr HKCU "Environment" "Path" "$1"
 SectionEnd
 
 ; Uninstaller Section
