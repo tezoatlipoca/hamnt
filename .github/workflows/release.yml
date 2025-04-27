@@ -95,7 +95,7 @@ jobs:
     - name: Build NSIS Installer
       if: matrix.os == 'windows-latest'
       run: |
-        & "C:\Program Files (x86)\NSIS\makensis.exe" "$env:GITHUB_WORKSPACE/win.installer/install.nsi"
+        & "C:\Program Files (x86)\NSIS\makensis.exe" "win.installer/install.nsi"
       shell: pwsh
 
     - name: Upload NSIS Installer
