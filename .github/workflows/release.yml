@@ -43,8 +43,8 @@ jobs:
 
       - name: Build NSIS Installer
         run: |
-          # Update OutFile in install.nsi to use the correct versioned name
-          powershell -Command "(Get-Content win.installer/install.nsi) -replace 'OutFile \".*\"', 'OutFile \"win.installer\\hamnt_${{ env.VERSION }}_win-x64.setup.exe\"' | Set-Content win.installer/install.nsi"
+          $outfile = "OutFile `"win.installer\hamnt_$env:VERSION`_win-x64.setup.exe`""
+          (Get-Content win.installer/install.nsi) -replace 'OutFile ".*"', $outfile | Set-Content win.installer/install.nsi
           & "C:\Program Files (x86)\NSIS\makensis.exe" "win.installer/install.nsi"
         shell: pwsh
 
@@ -79,8 +79,8 @@ jobs:
       - name: Archive Linux Binary
         id: linuxtar
         run: |
-          cd bin/Release/net8.0/linux-x64/publish/
-          tar czf ../../../hamnt_${{ env.VERSION }}_linux_x64.tar.gzip hamnt
+          
+          tar czf hamnt_${{ env.VERSION }}_linux_x64.tar.gzip bin/Release/net8.0/linux-x64/publish/hamnt
           echo "path=$(cd ../../../ && pwd)/hamnt_${{ env.VERSION }}_linux_x64.tar.gzip" >> $GITHUB_OUTPUT
 
       - name: Upload Linux Artifact
