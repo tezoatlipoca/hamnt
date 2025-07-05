@@ -103,25 +103,23 @@ jobs:
     needs: build-linux
     steps:
       - uses: actions/checkout@v3
+      - name: Set version variable
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+        shell: bash
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
-
       - name: Install dotnet-deb
         run: dotnet tool install -g dotnet-deb
-
       - name: Build Release
-        run: |
-          dotnet publish -c Release -r linux-x64
-
+        run: dotnet publish -c Release -r linux-x64
       - name: Create DEB Package
         run: dotnet-deb -c Release
-
       - name: Rename DEB Package
         run: |
           debfile=$(ls bin/Release/net8.0/linux-x64/*.deb | head -n 1)
           mv "$debfile" "hamnt_${VERSION}_linux_x64.deb"
-
       - name: Upload DEB Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -133,7 +131,10 @@ jobs:
     needs: build-linux
     steps:
       - uses: actions/checkout@v3
-
+      - name: Set version variable
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+        shell: bash
       - name: Build with dotnet
         run: |
           dotnet publish -c Release -r linux-x64
@@ -171,7 +172,6 @@ jobs:
         run: |
           snapfile=$(ls *.snap | head -n 1)
           mv "$snapfile" "hamnt_${VERSION}_linux_x64.snap"
-
       - name: Upload Snap Artifact
         uses: actions/upload-artifact@v4
         with:
