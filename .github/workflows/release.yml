@@ -41,6 +41,10 @@ jobs:
       - name: Install NSIS
         run: choco install nsis -y
 
+      - name: Ensure win.installer directory exists
+        run: mkdir -Force win.installer
+        shell: pwsh
+
       - name: Build NSIS Installer
         run: |
           $outfile = "OutFile `"win.installer\hamnt_$env:VERSION`_win-x64.setup.exe`""
