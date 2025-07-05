@@ -50,9 +50,11 @@ jobs:
 
       - name: Build NSIS Installer
         run: |
-          $outfile = "OutFile `"win.installer\hamnt_$env:VERSION`_win-x64.setup.exe`""
+          $outfile = "OutFile `"hamnt_$env:VERSION`_win-x64.setup.exe`""
           (Get-Content win.installer/install.nsi) -replace 'OutFile ".*"', $outfile | Set-Content win.installer/install.nsi
-          & "C:\Program Files (x86)\NSIS\makensis.exe" "win.installer/install.nsi"
+          Push-Location win.installer
+          & "C:\Program Files (x86)\NSIS\makensis.exe" "install.nsi"
+          Pop-Location
         shell: pwsh
 
       - name: Upload Windows Artifacts
