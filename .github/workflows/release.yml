@@ -35,29 +35,26 @@ jobs:
         id: winzip
         run: |
           cd bin/Release/net8.0/win-x64/publish/
-          7z a -tzip ../../../hamnt.${{ env.VERSION }}.win-x64.zip hamnt.exe
-          echo "path=$(cd ../../../ && pwd)/hamnt.${{ env.VERSION }}.win-x64.zip" >> $GITHUB_OUTPUT
+          7z a -tzip ../../../hamnt_${{ env.VERSION }}_win-x64.zip hamnt.exe
+          echo "path=$(cd ../../../ && pwd)/hamnt_${{ env.VERSION }}_win-x64.zip" >> $GITHUB_OUTPUT
 
       - name: Install NSIS
         run: choco install nsis -y
 
       - name: Build NSIS Installer
         run: |
+          # Update OutFile in install.nsi to use the correct versioned name
+          powershell -Command "(Get-Content win.installer/install.nsi) -replace 'OutFile \".*\"', 'OutFile \"win.installer\\hamnt_${{ env.VERSION }}_win-x64.setup.exe\"' | Set-Content win.installer/install.nsi"
           & "C:\Program Files (x86)\NSIS\makensis.exe" "win.installer/install.nsi"
         shell: pwsh
-
-      - name: Move NSIS Installer
-        id: nsis
-        run: |
-          echo "path=$(cd win.installer && pwd)/hamnt-*-setup.exe" >> $GITHUB_OUTPUT
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-artifacts
           path: |
-            hamnt.${{ env.VERSION }}.win-x64.zip
-            win.installer/hamnt-*-setup.exe
+            hamnt_${{ env.VERSION }}_win-x64.zip
+            win.installer/hamnt_${{ env.VERSION }}_win-x64.setup.exe
 
   build-linux:
     runs-on: ubuntu-latest
@@ -83,14 +80,14 @@ jobs:
         id: linuxtar
         run: |
           cd bin/Release/net8.0/linux-x64/publish/
-          tar czf ../../../hamnt.${{ env.VERSION }}.linux-x64.tar.gz hamnt
-          echo "path=$(cd ../../../ && pwd)/hamnt.${{ env.VERSION }}.linux-x64.tar.gz" >> $GITHUB_OUTPUT
+          tar czf ../../../hamnt_${{ env.VERSION }}_linux_x64.tar.gzip hamnt
+          echo "path=$(cd ../../../ && pwd)/hamnt_${{ env.VERSION }}_linux_x64.tar.gzip" >> $GITHUB_OUTPUT
 
       - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-artifact
-          path: hamnt.${{ env.VERSION }}.linux-x64.tar.gz
+          path: hamnt_${{ env.VERSION }}_linux_x64.tar.gzip
 
   create-deb:
     runs-on: ubuntu-latest
@@ -111,11 +108,16 @@ jobs:
       - name: Create DEB Package
         run: dotnet-deb -c Release
 
+      - name: Rename DEB Package
+        run: |
+          debfile=$(ls bin/Release/net8.0/linux-x64/*.deb | head -n 1)
+          mv "$debfile" "hamnt_${VERSION}_linux_x64.deb"
+
       - name: Upload DEB Artifact
         uses: actions/upload-artifact@v4
         with:
           name: deb-artifact
-          path: bin/Release/net8.0/linux-x64/*.deb
+          path: hamnt_${{ env.VERSION }}_linux_x64.deb
 
   create-snap:
     runs-on: ubuntu-latest
@@ -156,11 +158,16 @@ jobs:
         run: |
           snapcraft --destructive-mode --verbose
 
+      - name: Rename Snap Package
+        run: |
+          snapfile=$(ls *.snap | head -n 1)
+          mv "$snapfile" "hamnt_${VERSION}_linux_x64.snap"
+
       - name: Upload Snap Artifact
         uses: actions/upload-artifact@v4
         with:
           name: snap-artifact
-          path: "*.snap"
+          path: hamnt_${{ env.VERSION }}_linux_x64.snap
 
   release:
     runs-on: ubuntu-latest
@@ -187,9 +194,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            hamnt.*.win-x64.zip
-            win.installer/hamnt-*-setup.exe
-            hamnt.*.linux-x64.tar.gz
-            bin/Release/net8.0/linux-x64/*.deb
-            *.snap
+            hamnt_${{ env.VERSION }}_win-x64.zip
+            win.installer/hamnt_${{ env.VERSION }}_win-x64.setup.exe
+            hamnt_${{ env.VERSION }}_linux_x64.tar.gzip
+            hamnt_${{ env.VERSION }}_linux_x64.deb
+            hamnt_${{ env.VERSION }}_linux_x64.snap
 
