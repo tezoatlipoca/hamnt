@@ -32,9 +32,10 @@ jobs:
 
       - name: Archive Windows Binary
         id: winzip
+        shell: pwsh
         run: |
-          7z a -tzip hamnt_${VERSION}_win-x64.zip bin/Release/net8.0/win-x64/publish/hamnt.exe
-          echo "path=$(pwd)/hamnt_${VERSION}_win-x64.zip" >> $GITHUB_OUTPUT
+          7z a -tzip hamnt_${env:VERSION}_win-x64.zip bin/Release/net8.0/win-x64/publish/hamnt.exe
+          echo "path=$(pwd)/hamnt_${env:VERSION}_win-x64.zip" >> $GITHUB_OUTPUT
 
       - name: Install NSIS
         run: choco install nsis -y
