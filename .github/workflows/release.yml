@@ -203,9 +203,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            hamnt_${{ env.VERSION }}_win-x64.zip
-            win.installer/hamnt_${{ env.VERSION }}_win-x64.setup.exe
-            hamnt_${{ env.VERSION }}_linux_x64.tar.gzip
-            hamnt_${{ env.VERSION }}_linux_x64.deb
-            hamnt_${{ env.VERSION }}_linux_x64.snap
+            **/hamnt_${{ env.VERSION }}_win-x64.zip
+            **/hamnt_${{ env.VERSION }}_win-x64.setup.exe
+            **/hamnt_${{ env.VERSION }}_linux_x64.tar.gzip
+            **/hamnt_${{ env.VERSION }}_linux_x64.deb
+            **/hamnt_${{ env.VERSION }}_linux_x64.snap
 
