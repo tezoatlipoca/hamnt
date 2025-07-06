@@ -584,7 +584,7 @@ namespace hamnt
                     ? GlobalStatic.PARAMETERS["MATCH_MODE"]
                     : "Contains";
 
-                var matchingLines = fileContents.Split(Environment.NewLine)
+                var matchingLines = fileContents.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
                     .Where(line =>
                     {
                         switch (matchMode.ToLower())
@@ -678,7 +678,7 @@ namespace hamnt
                         ? GlobalStatic.PARAMETERS["MATCH_MODE"]
                         : "Contains";
 
-                    var matchingLines = fileContents.Split(Environment.NewLine)
+                    var matchingLines = fileContents.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
                         .Where(line =>
                         {
                             switch (matchMode.ToLower())
