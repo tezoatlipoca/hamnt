@@ -71,14 +71,6 @@ FunctionEnd
 Section "Install"
   SetOutPath "$INSTDIR"
 
-  ; Path to the binary we want to package
-  DetailPrint "Packaging binary at: hamnt.exe"
-
-  ; Check if the binary exists before proceeding
-  IfFileExists "hamnt.exe" +2 0
-    MessageBox MB_ICONSTOP "ERROR: Binary not found at hamnt.exe. Aborting installation."
-    Abort
-
   ; Add files
   File /oname=hamnt.exe "hamnt.exe"
 
