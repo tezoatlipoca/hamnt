@@ -1,5 +1,5 @@
 name: hamnt
-version: '0.2.0'
+version: '0.3.0'
 summary: Hyper Aggressively Minimal Note Taking CLI
 description: |
   CLI and interactive shell app for rapid note taking across multiple files.
@@ -15,20 +15,11 @@ apps:
     plugs:
       - home
       - network
-      - personal-files
     environment:
       DOTNET_BUNDLE_EXTRACT_BASE_DIR: $SNAP_USER_COMMON/dotnet_extract
 
 plugs:
-  personal-files:
-    interface: personal-files
-    read:
-      - $HOME/.config/hamnt
-      - $HOME/.cache/dotnet_bundle_extract
-    write:
-      - $HOME/.config/hamnt
-      - $HOME/.cache/dotnet_bundle_extract
-
+  
 parts:
   hamnt:
     plugin: dump

@@ -39,6 +39,8 @@ Options:
   -e, --edit <alias>             Edits the note file with OSs default editor (or in linux, whatever you `export EDITOR=<vi, vim etc.>`
   -q, --quit                     Quit the program
   -h, --help                     Show this help message
+  -f, --files <alias>            Show other files in the directory of the note file with the given alias
+                                 OR all files in NOTES_LOCATION if no alias is given
 ```
 Launching hamnt with no arguments will enter interactive mode.
 
@@ -79,10 +81,10 @@ These are read on launch and updated when `hamnt` quits, or when contents change
 
 The default NOTES_LOCATION is a `\notes` subfolder of the configuration folder above. 
 
-**SNAP WARNING** - The snap of hamnt stores data in a folder (`/snap/hamnt/common`) which is retained whenever 
+**SNAP WARNING** - The snap of hamnt stores data in a folder (`~/snap/hamnt/common`) which is retained whenever 
 the snap is updated (upgrade or downgrade). If the snap of hamnt is _removed_, however, this folder is deleted.
-It is strongly recommended that you change your NOTES_LOCATION to outside of the snaps folder, so the default 
-location for new aliased notes files is in a folder that will not be trashed if you remove the snap. 
+Since snaps are _contained_, the NOTES_LOCATION is stuck at `~/snap/hamnt/common/notes` so **if you
+remove the hamnt snap, be sure to copy your notes FIRST**. You can however alias files anywhere with _absolute file paths_. 
 
 ## Installation
 ### From Release
@@ -110,6 +112,14 @@ Download the .deb package from the [releases page](https://github.com/tezoatlipo
 ```bash
 sudo dpkg -i hamnt_0.2.0_amd64.deb
 ```
+
+#### RPM Package / OpenSUSE zypper
+Download the .rpm package from [releases page](https://github.com/tezoatlipoca/hamnt/releases)
+and install: 
+```bash
+sudo zypper install ./hamnt-0.3.0-1.x86_64.rpm
+```
+
 #### Windows
 Download the Windows exe package from the [releases page](https://github.com/tezoatlipoca/hamnt/releases)
 1. Extact the zip and copy `hamnt.exe` somewhere
@@ -120,6 +130,8 @@ Download the Windows SETUP exe from [releases page](https://github.com/tezoatlip
 and run it. It modifies your `%PATH%` Environment variable for you, but you may have to 
 restart any powershell/cmd sessions for it to take effect. 
 
+#### Windows Nuget/chocolatey
+_coming soon_
 
 ## Walkthrough
 Launch hamnt:

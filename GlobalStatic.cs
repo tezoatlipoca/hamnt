@@ -18,6 +18,7 @@ public static class GlobalStatic
     public static Dictionary<string, string> NOTE_FILES = new();
     public static Dictionary<string, string> PARAMETERS = new();
     public static bool interactiveMode = true;
+  
 
     public static bool noteFilesChanged = false; // taint flag; if changed, save before exit.
     // define a constructor
@@ -110,6 +111,10 @@ public static class GlobalStatic
         if (!PARAMETERS.ContainsKey("VERBOSE_OUTPUT"))
         {
             PARAMETERS["VERBOSE_OUTPUT"] = "false";
+        }
+        if (!PARAMETERS.ContainsKey("SHOW_USERNAME"))
+        {
+            PARAMETERS["SHOW_USERNAME"] = "false";
         }
         
 

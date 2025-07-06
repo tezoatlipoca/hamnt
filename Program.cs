@@ -70,16 +70,21 @@ class Program
         var command = string.Empty;
         var reason = string.Empty;
         // default mode is continuous - loop asking for user input, quit on q
-        // a - adds a note file with provided (and quoted) "alias" and "filepath"
-        // r - removes a note file with provided (and quoted) "alias"
-        // l - lists all note files
-        // q - quits the program
-        //      
+    
         while (command != "q")
         {
             if (GlobalStatic.interactiveMode)
             {
-                Console.Write("(a/r/l/s/e/v/h/q) > ");
+                bool showUsername = GlobalStatic.PARAMETERS.ContainsKey("SHOW_USERNAME") && 
+                                    GlobalStatic.PARAMETERS["SHOW_USERNAME"].Equals("true", StringComparison.OrdinalIgnoreCase);
+                if (showUsername)
+                {
+                    Console.Write($"{Environment.UserName}(a/r/l/s/e/v/h/q/f) > ");
+                }
+                else
+                {
+                    Console.Write("(a/r/l/s/e/v/h/q/f) > ");
+                }
             }
             var inline = string.Empty;
             if (GlobalStatic.interactiveMode)
@@ -142,20 +147,16 @@ class Program
                         ;
                         break;
                     }
-                // case "--cd":
-                // case "-c":
-                // case "c":
-                //     {
-                //         if(engine.ChangeDirectory(tokens)) {
-                //             command = "q";
-                //             break;
-                //         } else {
-                            
-                //         };
-                //         if (!GlobalStatic.interactiveMode) { command = "q"; }
-                //         ;
-                //         break;
-                //     }
+                case "--files":
+                case "-f":
+                case "f":
+                    {
+                        engine.ShowOtherFilesInDirectory(tokens);
+                        if (!GlobalStatic.interactiveMode) { command = "q"; }
+                        ;
+                        break;
+                    }
+
                 case "--set":
                 case "-s":
                 case "s":
@@ -196,6 +197,8 @@ class Program
                         Console.WriteLine("  -e, --edit <alias>                    Edit a note file (alias) in the default editor");
                         Console.WriteLine("  -q, --quit                     Quit the program");
                         Console.WriteLine("  -h, --help                     Show this help message\n");
+                        Console.WriteLine("  -f, --files <alias>            Show other files in the directory of the note file with the given alias");
+                        Console.WriteLine("                                 OR all files in NOTES_LOCATION if no alias is given");
                         Console.WriteLine("Launching hamnt with no arguments will enter interactive mode.");
                         Console.WriteLine("In interactive mode, you can use the single letter commands without the leading - or --\n");
                         Console.WriteLine("If the first argument doesn't match any of the commands, but IS a Note File alias,\n the rest of the commandline is added to that note file (which is created if applicable).\n");

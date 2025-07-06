@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>hamnt</id>
+    <version>0.2.1</version>
+    <title>hamnt</title>
+    <authors>tezoatlipoca</authors>
+    <owners>tezoatlipoca</owners>
+    <projectUrl>https://github.com/tezoatlipoca/hamnt</projectUrl>
+
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Hyper Aggressively Minimal Note Taking CLI</description>
+    <summary>CLI and interactive shell app for rapid note taking across multiple files.</summary>
+    <tags>notes cli productivity</tags>
+    <license type="expression">MIT</license>
+  </metadata>
+</package>
