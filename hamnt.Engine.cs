@@ -80,8 +80,11 @@ namespace hamnt
 
             if (!File.Exists(filePath))
             {
-                // create the file
-                //DBg.d(LogLevel.Warning, $"File does not exist but will if something is added to it: {filePath}");
+                var dir = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
                 File.Create(filePath).Close();
             }
         }
@@ -743,8 +746,32 @@ namespace hamnt
                 else
                 {
                     filePath = GlobalStatic.NOTE_FILES[alias];
-                    directoryPath = Path.GetDirectoryName(filePath);
-
+                    if (String.IsNullOrEmpty(filePath))
+                    {
+                        DBg.d(LogLevel.Warning, $"PATH for {alias} not found; using NOTES_LOCATION instead.");
+                        directoryPath = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
+                    }
+                    else
+                    {
+                        // does the filePath exist?
+                        if (!File.Exists(filePath))
+                        {
+                            DBg.d(LogLevel.Warning, $"File {filePath} does not exist; using NOTES_LOCATION instead.");
+                            directoryPath = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
+                            filePath = null!; // Reset filePath to avoid confusion
+                        }
+                        else
+                        {
+                            // Get the directory of the file
+                            DBg.d(LogLevel.Trace, $"File path for alias {alias} is: {filePath}");
+                            directoryPath = Path.GetDirectoryName(filePath)!;
+                            if (directoryPath == null)
+                            {
+                                directoryPath = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
+                            }
+                        }
+                        
+                    }
                 }
             }
 

@@ -17,7 +17,7 @@ The same actions+parameters work via command line or
 in a really basic interactive shell (good for rapid note taking
 w/o having to type `hamnt` over and over again).
 
-[![Version](https://img.shields.io/github/v/tag/tezoatlipoca/hamnt?label=version)](https://github.com/tezoatlipoca/hamnt/releases/tag/v0.2.0)
+[![Version](https://img.shields.io/github/v/tag/tezoatlipoca/hamnt?label=version)](https://github.com/tezoatlipoca/hamnt/releases/tag/v0.3.0)
 
 ## Table of Contents
 - [Usage](#usage)
@@ -36,9 +36,10 @@ Options:
   -l, --list                     List all note files
   -s, --set                      Set a (configuration) parameter
   -v, --version                  Show version information
-  -e, --edit <alias>             Edits the note file with OSs default editor (or in linux, whatever you `export EDITOR=<vi, vim etc.>`
+  -e, --edit <alias>                    Edit a note file (alias) in the default editor
   -q, --quit                     Quit the program
   -h, --help                     Show this help message
+
   -f, --files <alias>            Show other files in the directory of the note file with the given alias
                                  OR all files in NOTES_LOCATION if no alias is given
 ```
@@ -66,6 +67,7 @@ all note files are grepped for the remainder of the command line.
     * Exact - note file matches will hit on any line that _exactly matches_ the input you give
     * Any - note file matches will hit on any line that _contains any of the words from_ the input you give
 * VERBOSE_OUTPUT - true/false(default) - datetime and file/function/line# debugging info are displayed depending on the LOG_LEVEL.  
+* SHOW_USERNAME - true/false(default) - in interactive mode, prepends your username / handy to spot if you're running in sudo/administrator mode
 
 ## Data Store
 In 
@@ -90,34 +92,30 @@ remove the hamnt snap, be sure to copy your notes FIRST**. You can however alias
 ### From Release
 Download the latest release for your platform from the [releases page](https://github.com/tezoatlipoca/hamnt/releases).
 
-### From Source
-```bash
-git clone https://github.com/tezoatlipoca/hamnt.git
-cd hamnt
-dotnet publish -c Release
-```
-#### Snap Package (recommended)
 
-Application to the Ubuntu store is being processed. Until then...
- 
+#### Snap Package
+Application to the Snap store is still in progress. Until then...
 ```bash
 # Download the snap package
-wget https://github.com/tezoatlipoca/hamnt/releases/download/v0.2.0/hamnt_0.2.0_amd64.snap
+wget https://github.com/tezoatlipoca/hamnt/releases/download/v0.3.0/hamnt_0.3.0_linux_x64.snap
 
 # Install it locally (--dangerous flag needed for non-store snaps)
-sudo snap install --dangerous hamnt_0.2.0_amd64.snap
+sudo snap install --dangerous ./hamnt_0.3.0_linux_x64.snap
 ```
 #### Debian/Ubuntu Package
-Download the .deb package from the [releases page](https://github.com/tezoatlipoca/hamnt/releases) and install:
 ```bash
-sudo dpkg -i hamnt_0.2.0_amd64.deb
+wget https://github.com/tezoatlipoca/hamnt/releases/download/v0.3.0/hamnt_0.3.0_linux_x64.deb
+sudo dpkg -i ./hamnt_0.3.0_linux_x64.deb
 ```
 
 #### RPM Package / OpenSUSE zypper
-Download the .rpm package from [releases page](https://github.com/tezoatlipoca/hamnt/releases)
-and install: 
 ```bash
-sudo zypper install ./hamnt-0.3.0-1.x86_64.rpm
+wget https://github.com/tezoatlipoca/hamnt/releases/download/v0.3.0/hamnt_0.3.0_linux_x64.rpm
+sudo zypper install ./hamnt_0.3.0_linux_x64.rpm
+```
+You may have to ignore a missing signature for now; file is installed to `/usr/local/bin/rpm-root/usr/local/bin` which is _unlikely_ to be in your path, in which case:
+```bash
+sudo ln -s /usr/local/bin/rpm-root/usr/local/bin/hamnt /usr/local/bin/hamnt
 ```
 
 #### Windows
@@ -137,10 +135,10 @@ _coming soon_
 Launch hamnt:
 ```bash
 tezoatlipoca@pickles17:~$ hamnt
-2025-04-11T23:31:02 WARN  | Creating config file directory: /home/tezoatlipoca/.config/hamnt/hamnt.config.json
-2025-04-11T23:31:02 WARN  | Creating config file: /home/tezoatlipoca/.config/hamnt/hamnt.config.json
-HAMNT - Hyper Aggressively Minimal Note Taking app // VERSION: 0.0.1+543cc8ff4a509d1b2956a501b9ffc3176538ad9e
-(a/r/l/q) >>
+WARN  | Creating config file directory: /home/tezoatlipoca/.config/hamnt/hamnt.config.json
+WARN  | Creating config file: /home/tezoatlipoca/.config/hamnt/hamnt.config.json
+HAMNT - Hyper Aggressively Minimal Note Taking app // VERSION: 0.3.0+023c4a2
+(a/r/l/s/e/v/h/q/f) > 
 ```
 The default location for note files is `<user home>/.config/hamnt/notes`. Create a new notes file alias:
 ```bash
@@ -155,84 +153,62 @@ foo_notes.txt
 ```
 Add some content to that file
 ```bash
-(a/r/l/q) >>
-foo This text is added to foo_notes.txt
-2025-04-11T23:34:55 INFO  | Directory created: /home/tezoatlipoca/.config/hamnt/notes
-2025-04-11T23:34:55 INFO  | File created: /home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt
-Adding 'This text is added to foo_notes.txt' to foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt)
+(a/r/l/s/e/v/h/q/f) > foo This text is aded to foo_notes.txt
+Adding 'This text is aded to foo_notes.txt' to foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt)
 ```
 If we just give the name of the file alias `foo`, it dumps the contents of that file:
 ```bash
-(a/r/l/q) >>
-foo
-======= foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt) ===========================================================
-| This text is added to foo_notes.txt
+(a/r/l/s/e/v/h/q/f) > foo
+======= foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt) ===========================================================================
+| This text is aded to foo_notes.txt
 ```
 Lets change the (default) location where notes files are kept; don't worry, the new folder will be created later when it is needed
 ```bash
-a/r/l/q) >>
-s
-Enter parameter name: 
-NOTES_LOCATION
-Enter parameter value: 
-/home/tezoatlipoca/note_vault
-2025-04-11T23:37:35 WARN  | NOTES_LOCATION '/home/tezoatlipoca/note_vault' is not a directory.
+(a/r/l/s/e/v/h/q/f) > s NOTES_LOCATION /home/tezoatlipoca/notes_vault
+WARN  | NOTES_LOCATION '/home/tezoatlipoca/notes_vault' is not a directory.
 ```
 Now when we add a new file alias, its defined in the new location. 
 ```bash
-(a/r/l/q) >>
-a      
-Enter alias: 
-todo
-Enter filename (in /home/tezoatlipoca/note_vault) or absolute: 
-todos.txt
-2025-04-11T23:38:36 INFO  | Added note file: todo -> /home/tezoatlipoca/note_vault/todos.txt
-2025-04-11T23:38:36 WARN  | File does not exist but will if something is added to it: /home/tezoatlipoca/note_vault/todos.txt
+(a/r/l/s/e/v/h/q/f) > a todo todos.txt
+Added note file: todo -> /home/tezoatlipoca/notes_vault/todos.txt
 ```
-.. but the actual note file isn't created until content is first added:
+.. and the actual note file is created. If we add content to THAT alias,
 ```bash
-(a/r/l/q) >>
-todo This text should show up in /note_vault/todos.txt
-2025-04-11T23:41:08 INFO  | Directory created: /home/tezoatlipoca/note_vault
-2025-04-11T23:41:08 INFO  | File created: /home/tezoatlipoca/note_vault/todos.txt
-Adding 'This text should show up in /note_vault/todos.txt' to todo (/home/tezoatlipoca/note_vault/todos.txt)
+(a/r/l/s/e/v/h/q/f) > todo This text should show up in /note_vault/todos.txt
+Adding 'This text should show up in /note_vault/todos.txt' to todo (/home/tezoatlipoca/notes_vault/todos.txt)
 ```
-How do we know what note file aliases are in use? 
+Now how do we know what note file aliases are in use? 
 ```bash
-(a/r/l/q) >>
-l
+(a/r/l/s/e/v/h/q/f) > l
 foo -> /home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt
-todo -> /home/tezoatlipoca/note_vault/todos.txt
+todo -> /home/tezoatlipoca/notes_vault/todos.txt
 ```
 Entering some search text shows me which of my alias'd files contain it:
 ```bash
-(a/r/l/q) >>
-This text
-foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt) == This text is added to foo_notes.txt
-todo (/home/tezoatlipoca/note_vault/todos.txt) == This text should show up in /note_vault/todos.txt
+(a/r/l/s/e/v/h/q/f) > this text
+foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt) == This text is aded to foo_notes.txt
+todo (/home/tezoatlipoca/notes_vault/todos.txt) == This text should show up in /note_vault/todos.txt
 ```
 When we quit, the list of all aliased note files and any configuration parameters are saved for next time.
 We can also perform the same actions but as command line parameters:
 ```bash
-ezoatlipoca@pickles17:~$ hamnt This text
-foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt) == This text is added to foo_notes.txt
-todo (/home/tezoatlipoca/note_vault/todos.txt) == This text should show up in /note_vault/todos.txt
-tezoatlipoca@pickles17:~$ hamnt a grocery /home/tezoatlipoca/Dropbox/grocery_list.txt
-2025-04-11T23:46:36 INFO  | Added note file: grocery -> /home/tezoatlipoca/Dropbox/grocery_list.txt
-2025-04-11T23:46:36 WARN  | File does not exist but will if something is added to it: /home/tezoatlipoca/Dropbox/grocery_list.txt
+tezoatlipoca@pickles17:~$ hamnt This text
+foo (/home/tezoatlipoca/.config/hamnt/notes/foo_notes.txt) == This text is aded to foo_notes.txt
+todo (/home/tezoatlipoca/notes_vault/todos.txt) == This text should show up in /note_vault/todos.txt
+tezoatlipoca@pickles17:~$ hamnt a grocery ~/Dropbox/grocery_list.txt
+Added note file: grocery -> /home/tezoatlipoca/Dropbox/grocery_list.txt
 tezoatlipoca@pickles17:~$ hamnt grocery lettuce
-2025-04-11T23:46:53 INFO  | File created: /home/tezoatlipoca/Dropbox/grocery_list.txt
 Adding 'lettuce' to grocery (/home/tezoatlipoca/Dropbox/grocery_list.txt)
 tezoatlipoca@pickles17:~$ hamnt grocery hamburgers
 Adding 'hamburgers' to grocery (/home/tezoatlipoca/Dropbox/grocery_list.txt)
-tezoatlipoca@pickles17:~$ hamnt grocery hamburgers
-grocery (/home/tezoatlipoca/Dropbox/grocery_list.txt) == hamburgers
+tezoatlipoca@pickles17:~$ hamnt grocery lettuce
+grocery (/home/tezoatlipoca/Dropbox/grocery_list.txt) == lettuce
 tezoatlipoca@pickles17:~$ hamnt grocery
-======= grocery (/home/tezoatlipoca/Dropbox/grocery_list.txt) ================================================================
+======= grocery (/home/tezoatlipoca/Dropbox/grocery_list.txt) ================================================================================
 | lettuce
 | hamburgers
 ```
-`````
+
 
 
 
