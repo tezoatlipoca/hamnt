@@ -72,14 +72,15 @@ Section "Install"
   SetOutPath "$INSTDIR"
 
   ; Path to the binary we want to package
-  
-  DetailPrint "Attempting to package binary at: ..\bin\Release\net8.0\win-x64\publish\hamnt.exe"
+  DetailPrint "Packaging binary at: hamnt.exe"
 
   ; Check if the binary exists before proceeding
-  ; IfFileExists "../bin/Release/net8.0/win-x64/publish/hamnt.exe" +2 0
-  IfFileExists "..\bin\Release\net8.0\win-x64\publish\hamnt.exe" +2 0
-    MessageBox MB_ICONSTOP "ERROR: Binary not found at ..\bin\Release\net8.0\win-x64\publish\hamnt.exe. Aborting installation."
+  IfFileExists "hamnt.exe" +2 0
+    MessageBox MB_ICONSTOP "ERROR: Binary not found at hamnt.exe. Aborting installation."
     Abort
+
+  ; Add files
+  File /oname=hamnt.exe "hamnt.exe"
 
   ; Check for existing version
   ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "DisplayVersion"
@@ -93,10 +94,7 @@ Section "Install"
     ${EndIf}
   ${EndIf}
 
-  ; Add files
-  File /oname=hamnt.exe "..\bin\Release\net8.0\win-x64\publish\hamnt.exe"   ; WINDOWS
-  ; File /oname=hamnt.exe "../bin/Release/net8.0/win-x64/publish\hamnt.exe"    ; LINIX CROSS COMPILE
-  
+ 
 
   ; Create Start Menu shortcuts
   CreateDirectory "$SMPROGRAMS\Hamnt"
