@@ -229,8 +229,8 @@ jobs:
       - name: Prepare Chocolatey package directory
         run: |
           mkdir -p nuget/tools
-          cp ./nuget/hamnt.nuspec nuget/
-          cp ./nuget/tools/* nuget/tools/
+          # cp ./nuget/hamnt.nuspec nuget/
+          # cp ./nuget/tools/* nuget/tools/
 
       - name: Pack Chocolatey package
         run: mono nuget.exe pack nuget/hamnt.nuspec
