@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography;
 
 
 namespace hamnt
@@ -14,7 +15,7 @@ namespace hamnt
         {
             var alias = string.Empty;
             var filePath = string.Empty;
-            if (GlobalStatic.interactiveMode && tokens.Length <2)
+            if (GlobalStatic.interactiveMode && tokens.Length < 2)
             {
                 Console.WriteLine("Enter alias: ");
                 alias = Console.ReadLine();
@@ -79,8 +80,12 @@ namespace hamnt
 
             if (!File.Exists(filePath))
             {
-                // create the file
-                DBg.d(LogLevel.Warning, $"File does not exist but will if something is added to it: {filePath}");
+                var dir = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                File.Create(filePath).Close();
             }
         }
         public void RemoveNoteFile(string[] tokens)
@@ -143,7 +148,7 @@ namespace hamnt
             var originalParamValue = string.Empty;
             // if we get here via cli, the parameter name will be 2nd param, value 3rd
             // if we get here via interactive mode we can prompt
-            if (GlobalStatic.interactiveMode  && tokens.Length < 2)
+            if (GlobalStatic.interactiveMode && tokens.Length < 2)
             {
                 Console.Write("Enter parameter name: ");
                 paramName = Console.ReadLine();
@@ -152,7 +157,7 @@ namespace hamnt
                     DBg.d(LogLevel.Error, "Parameter name is null or empty.");
                     return;
                 }
-                var validParams = new HashSet<string> { "NOTES_LOCATION", "LOG_LEVEL", "CASE_SENSITIVE", "MATCH_MODE", "VERBOSE_OUTPUT" };
+                var validParams = new HashSet<string> { "NOTES_LOCATION", "LOG_LEVEL", "CASE_SENSITIVE", "MATCH_MODE", "VERBOSE_OUTPUT", "SHOW_USERNAME" };
                 if (!validParams.Contains(paramName))
                 {
                     DBg.d(LogLevel.Error, $"Parameter '{paramName}' not valid.");
@@ -172,7 +177,7 @@ namespace hamnt
                 if (tokens.Length < 3)
                 {
                     DBg.d(LogLevel.Error, "Not enough parameters. Try `hamnt --set <parameter> <value>`");
-                    DBg.d(LogLevel.Error, "           parameters: NOTES_LOCATION, LOG_LEVEL, CASE_SENSITIVE, VERBOSE_OUTPUT, MATCH_MODE");
+                    DBg.d(LogLevel.Error, "           parameters: NOTES_LOCATION, LOG_LEVEL, CASE_SENSITIVE, VERBOSE_OUTPUT, MATCH_MODE, SHOW_USERNAME");
                     return;
                 }
                 paramName = tokens[1];
@@ -220,6 +225,13 @@ namespace hamnt
                     }
                     break;
                 case "NOTES_LOCATION":
+                    // If running as a snap, disallow changing NOTES_LOCATION
+                    if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SNAP")))
+                    {
+                        DBg.d(LogLevel.Error, "Cannot change NOTES_LOCATION when running as a snap.");
+                        DBg.d(LogLevel.Information, $"Your notes are stored in: {GlobalStatic.PARAMETERS["NOTES_LOCATION"]}");
+                        return;
+                    }
                     // check to see if the parameter value is not null/empty
                     if (string.IsNullOrEmpty(paramValue))
                     {
@@ -232,20 +244,17 @@ namespace hamnt
                         if (!Path.IsPathRooted(paramValue))
                         {
                             DBg.d(LogLevel.Warning, $"NOTES_LOCATION '{paramValue}' is not a valid path; will be created if needed");
-
                         }
 
                         // check to see if the parameter value is a directory
                         if (!Directory.Exists(paramValue))
                         {
                             DBg.d(LogLevel.Warning, $"NOTES_LOCATION '{paramValue}' is not a directory.");
-
                         }
                         originalParamValue = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
                         GlobalStatic.PARAMETERS["NOTES_LOCATION"] = paramValue;
                         if (originalParamValue != paramValue)
                         {
-
                             didAnytingChange = true;
                             DBg.d(LogLevel.Trace, $"Set NOTES_LOCATION: {paramValue}");
                         }
@@ -346,6 +355,36 @@ namespace hamnt
                         }
                     }
                     break;
+                case "SHOW_USERNAME":
+                // check to see if the parameter value is not null/empty
+                    if (string.IsNullOrEmpty(paramValue))
+                    {
+                        DBg.d(LogLevel.Error, "SHOW_USERNAME is null or empty.");
+                        return;
+                    }
+                    // check to see if the parameter value is a valid boolean
+                    if (!bool.TryParse(paramValue, out _))
+                    {
+                        DBg.d(LogLevel.Error, $"SHOW_USERNAME '{paramValue}' is not valid. Try one of: true, false.");
+                        return;
+                    }
+                    else
+                    {
+                        // set the parameter value.. if it CHANGED value that is...
+                        originalParamValue = GlobalStatic.PARAMETERS["SHOW_USERNAME"];
+                        if (originalParamValue != paramValue)
+                        {
+                            GlobalStatic.PARAMETERS["SHOW_USERNAME"] = paramValue;
+                            didAnytingChange = true;
+                            DBg.d(LogLevel.Trace, $"Set SHOW_USERNAME: {paramValue}");
+                        }
+                        else
+                        {
+                            DBg.d(LogLevel.Warning, $"SHOW_USERNAME already set to {paramValue}");
+                        }
+
+                    }
+                    break;
                 default:
                     // do nothing
                     DBg.d(LogLevel.Warning, $"Error: Parameter '{paramName}' not valid.");
@@ -361,7 +400,7 @@ namespace hamnt
         public void EditNoteFile(string[] tokens)
         {
             var alias = string.Empty;
-            if (GlobalStatic.interactiveMode  && tokens.Length < 1)
+            if (GlobalStatic.interactiveMode && tokens.Length < 1)
             {
                 Console.Write("Enter alias: ");
                 alias = Console.ReadLine();
@@ -469,64 +508,7 @@ namespace hamnt
             }
         }
 
-        // public bool ChangeDirectory(string[] tokens)
-        // {
-        //     var alias = string.Empty;
-        //     if (GlobalStatic.interactiveMode)
-        //     {
-        //         Console.Write("Enter alias: ");
-        //         alias = Console.ReadLine();
-        //         if (string.IsNullOrEmpty(alias))
-        //         {
-        //             DBg.d(LogLevel.Error, "No note file alias specified.");
-        //             return false;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         // alias is the 2nd token in tokens array
-        //         if (tokens.Length < 2)
-        //         {
-        //             DBg.d(LogLevel.Error, "No note file alias specified.");
-        //             return false; ;
-        //         }
-        //         alias = tokens[1];
-        //     }
 
-        //     if (GlobalStatic.NOTE_FILES.ContainsKey(alias))
-        //     {
-        //         var filePath = GlobalStatic.NOTE_FILES[alias];
-        //         // does it exist? 
-        //         if (!File.Exists(filePath))
-        //         {
-        //             DBg.d(LogLevel.Warning, $"File {filePath} does not exist.");
-        //             return false;
-        //         }
-        //         else
-        //         {
-        //             // get the containing directory of the file
-        //             var path = Path.GetDirectoryName(filePath);
-        //             if (path == null)
-        //             {
-        //                 DBg.d(LogLevel.Error, $"Error: Unable to get directory name for {filePath}");
-        //                 return false;
-        //             }
-        //             else
-        //             {
-        //                 // set the current directory to the file's directory
-        //                 Directory.SetCurrentDirectory(path);
-        //                 return true;
-        //             }
-        //         }
-        //     }
-        //     else
-        //         {
-        //             DBg.d(LogLevel.Warning, $"Alias {alias} not found.");
-        //             return false;
-
-        //         }
-
-        //     }
         public void Search(string[] tokens)
         {
             // if(tokens == null) {
@@ -605,7 +587,7 @@ namespace hamnt
                     ? GlobalStatic.PARAMETERS["MATCH_MODE"]
                     : "Contains";
 
-                var matchingLines = fileContents.Split(Environment.NewLine)
+                var matchingLines = fileContents.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
                     .Where(line =>
                     {
                         switch (matchMode.ToLower())
@@ -659,7 +641,7 @@ namespace hamnt
                     {
                         DBg.d(LogLevel.Error, $"An unexpected error occurred while writing to the file '{noteFile.Value}': {ex.Message}");
                     }
-                
+
                 }
             }
             else
@@ -699,7 +681,7 @@ namespace hamnt
                         ? GlobalStatic.PARAMETERS["MATCH_MODE"]
                         : "Contains";
 
-                    var matchingLines = fileContents.Split(Environment.NewLine)
+                    var matchingLines = fileContents.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None)
                         .Where(line =>
                         {
                             switch (matchMode.ToLower())
@@ -735,6 +717,102 @@ namespace hamnt
 
             }
 
+        }
+
+        // if an alias is given, shows a directory listing of all files in the same directory.
+        // the aliased file (or any others that are aliased) will be highlighted.
+        // if no alias is given, shows a directory listing of all files in NOTES_LOCATION
+        // highlighting any that are aliased.
+        public void ShowOtherFilesInDirectory(string[] tokens)
+        {
+            string alias = string.Empty;
+            string directoryPath = string.Empty;
+            string filePath = string.Empty;
+            // if we only got one token, it was the f command that got us here. 
+            // directoryPath will be NOTES_LOCATION
+            if (tokens.Length < 2)
+            {
+                // NOTES_LOCATION must already exist or we wounldn't be here
+                directoryPath = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
+            }
+            else
+            {
+                alias = tokens[1];
+                if (!GlobalStatic.NOTE_FILES.ContainsKey(alias))
+                {
+                    DBg.d(LogLevel.Warning, $"Alias {alias} not found; using NOTES_LOCATION instead.");
+                    directoryPath = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
+                }
+                else
+                {
+                    filePath = GlobalStatic.NOTE_FILES[alias];
+                    if (String.IsNullOrEmpty(filePath))
+                    {
+                        DBg.d(LogLevel.Warning, $"PATH for {alias} not found; using NOTES_LOCATION instead.");
+                        directoryPath = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
+                    }
+                    else
+                    {
+                        // does the filePath exist?
+                        if (!File.Exists(filePath))
+                        {
+                            DBg.d(LogLevel.Warning, $"File {filePath} does not exist; using NOTES_LOCATION instead.");
+                            directoryPath = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
+                            filePath = null!; // Reset filePath to avoid confusion
+                        }
+                        else
+                        {
+                            // Get the directory of the file
+                            DBg.d(LogLevel.Trace, $"File path for alias {alias} is: {filePath}");
+                            directoryPath = Path.GetDirectoryName(filePath)!;
+                            if (directoryPath == null)
+                            {
+                                directoryPath = GlobalStatic.PARAMETERS["NOTES_LOCATION"];
+                            }
+                        }
+                        
+                    }
+                }
+            }
+
+            if (directoryPath == null || !Directory.Exists(directoryPath))
+            {
+                DBg.d(LogLevel.Error, $"Directory for {alias} does not exist: {directoryPath}");
+                return;
+            }
+
+            // Get all files in the directory
+            var files = Directory.GetFiles(directoryPath);
+
+            // Highlight the directory path in yellow
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Files in directory '{directoryPath}':");
+            Console.ResetColor();
+
+            foreach (var file in files)
+            {
+                var fileName = Path.GetFileName(file);
+
+                // Find the alias for this file, if any
+                var tempalias = GlobalStatic.NOTE_FILES
+                    .FirstOrDefault(kvp => Path.GetFullPath(kvp.Value) == Path.GetFullPath(file)).Key;
+
+                if (!string.IsNullOrEmpty(tempalias))
+                {
+                    Console.ForegroundColor = ConsoleColor.Green; // Highlight aliased files
+                    Console.Write(fileName);
+                    Console.ResetColor();
+                    Console.Write("  <-- aliased as: ");
+                    Console.ForegroundColor = ConsoleColor.Yellow; // Highlight alias name
+                    Console.Write(tempalias);
+                    Console.ResetColor();
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.WriteLine(fileName);
+                }
+            }
         }
     }
 }
