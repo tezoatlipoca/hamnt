@@ -3,17 +3,17 @@
 
 ; General Settings
 Name "Hamnt"
-OutFile "hamnt-0.2.1-setup.exe"
+OutFile "hamnt-0.3.0-setup.exe"
 InstallDir "$PROGRAMFILES\Hamnt"
 InstallDirRegKey HKCU "Software\Hamnt" ""
 RequestExecutionLevel admin
 
 ; Version Information
-VIProductVersion "0.2.1.0"
+VIProductVersion "0.3.0.0"
 VIAddVersionKey "ProductName" "Hamnt"
 VIAddVersionKey "FileDescription" "HyperAggressively Minimal Note Taking app"
 VIAddVersionKey "LegalCopyright" "© tezoatlipoca@gmail.com"
-VIAddVersionKey "FileVersion" "0.2.1"
+VIAddVersionKey "FileVersion" "0.3.0"
 
 ; Interface Settings
 !define MUI_ABORTWARNING
@@ -76,7 +76,7 @@ Section "Install"
 
   ; Check for existing version
   ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "DisplayVersion"
-  StrCpy $R1 "0.2.1" ; This installer's version
+  StrCpy $R1 "0.3.0" ; This installer's version
 
   ; Compare versions (simple string compare; for more complex versioning, use a plugin)
   ${If} $R0 != ""
@@ -100,7 +100,7 @@ Section "Install"
   ${If} $InstallScope == "ALL"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "DisplayName" "Hamnt"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "DisplayVersion" "0.2.1"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "DisplayVersion" "0.3.0"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "Publisher" "tezoatlipoca"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "InstallLocation" "$INSTDIR"
     ; Add install directory to system PATH
@@ -110,7 +110,7 @@ Section "Install"
   ${Else}
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "DisplayName" "Hamnt"
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "DisplayVersion" "0.2.1"
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "DisplayVersion" "0.3.0"
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "Publisher" "tezoatlipoca"
     WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\Hamnt" "InstallLocation" "$INSTDIR"
     ; Add install directory to user PATH
